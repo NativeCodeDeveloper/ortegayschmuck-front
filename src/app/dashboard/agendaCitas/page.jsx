@@ -27,6 +27,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import {SelectDinamic} from "@/Componentes/SelectDinamic";
 
 
 export default function AgendaCitas() {
@@ -38,6 +39,74 @@ export default function AgendaCitas() {
     const [fechaInicio, setfechaInicio] = useState(null);
     const [fechaFinalizacion, setfechaFinalizacion] = useState(null);
     const [estadoReserva, setestadoReserva] = useState("");
+    const [listaProfesionales, setListaProfesionales] = useState([]);
+    const [id_profesional, setId_profesional] = useState("");
+
+
+
+    async function buscarPorProfesional(id_profesional) {
+        try {
+            const res = await fetch(`${API}/reservaPacientes/seleccionarPorProfesional`, {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({id_profesional}),
+                mode: "cors"
+            });
+
+            const respuestaBackend = await res.json();
+
+            if (respuestaBackend.length > 0) {
+                setdataLista(respuestaBackend);
+                return toast.success("Reservas con el profesional encontradas!")
+            }
+
+
+        } catch (error) {
+            console.log(error);
+            return toast.error("No ha sido posible buscar, contacte a soporte Tecnico de Medify");
+        }
+    }
+
+    useEffect(() => {
+        buscarPorProfesional(id_profesional)
+    },[id_profesional])
+
+
+
+
+    async function seleccionarTodosProfesionalesAgendaLista() {
+        try {
+            const res = await fetch(`${API}/profesionales/seleccionarTodosProfesionales`, {
+                method: 'GET',
+                headers: {Accept: 'application/json'},
+                mode: 'cors'
+            })
+
+            if (!res.ok) {
+                return toast.error('Error al cargar los profesionales, por favor intente nuevamente.');
+
+            }else{
+                const respustaBackend = await res.json();
+
+                if(respustaBackend){
+                    setListaProfesionales(respustaBackend);
+
+                }else{
+                    return toast.error('Error al cargar los profesionales, por favor intente nuevamente.');
+                }
+            }
+        }catch (error) {
+            return toast.error('Error al cargar los profesionales, por favor intente nuevamente.');
+        }
+    }
+
+    useEffect(() => {
+        seleccionarTodosProfesionalesAgendaLista();
+    }, []);
+
 
     function verDetalleAgenda(id_reserva) {
         router.push(`/dashboard/AgendaDetalle/${id_reserva}`);
@@ -283,6 +352,18 @@ export default function AgendaCitas() {
                                             Buscar
                                         </button>
                                     </div>
+                                    <div className="mt-5">
+                                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Profesional</label>
+                                        <SelectDinamic
+                                            value={id_profesional}
+                                            onChange={(e) => setId_profesional(e.target.value)}
+                                            options={listaProfesionales.map(profesional => ({
+                                                value: profesional.id_profesional,
+                                                label: profesional.nombreProfesional
+                                            }))}
+                                            placeholder="Selecciona un profesional"
+                                        />
+                                    </div>
                                 </div>
 
                                 <button
@@ -362,8 +443,9 @@ export default function AgendaCitas() {
                                 <TableHeader>
                                     <TableRow className="bg-gradient-to-r from-sky-600 to-cyan-500 hover:from-sky-600 hover:to-cyan-500">
                                         <TableHead className="text-center font-semibold text-white text-xs uppercase tracking-wider px-3 py-3">Fecha</TableHead>
-                                        <TableHead className="text-left font-semibold text-white text-xs uppercase tracking-wider px-3 py-3">Paciente</TableHead>
-                                        <TableHead className="text-left font-semibold text-white text-xs uppercase tracking-wider px-3 py-3">RUT</TableHead>
+                                        <TableHead className="text-center font-semibold text-white text-xs uppercase tracking-wider px-3 py-3">Paciente</TableHead>
+                                        <TableHead className="text-center font-semibold text-white text-xs uppercase tracking-wider px-3 py-3">Profesional</TableHead>
+                                        <TableHead className="text-center font-semibold text-white text-xs uppercase tracking-wider px-3 py-3">RUT</TableHead>
                                         <TableHead className="text-center font-semibold text-white text-xs uppercase tracking-wider px-3 py-3">Estado</TableHead>
                                         <TableHead className="text-center font-semibold text-white text-xs uppercase tracking-wider px-3 py-3">Detalle</TableHead>
                                     </TableRow>
@@ -381,10 +463,13 @@ export default function AgendaCitas() {
                                                     <span className="text-sm font-semibold text-sky-700">{formatearFecha(data.fechaInicio)}</span>
                                                 </span>
                                             </TableCell>
-                                            <TableCell className="font-medium text-slate-800 text-sm px-3 py-2.5 whitespace-nowrap">
+                                            <TableCell className="text-center font-medium text-slate-800 text-sm px-3 py-2.5 whitespace-nowrap">
                                                 {data.nombrePaciente + " " + data.apellidoPaciente}
                                             </TableCell>
-                                            <TableCell className="text-slate-600 text-sm px-3 py-2.5 font-mono whitespace-nowrap">{data.rut}</TableCell>
+                                            <TableCell className="text-center font-medium text-slate-800 text-sm px-3 py-2.5 whitespace-nowrap">
+                                                {data.nombreProfesional}
+                                            </TableCell>
+                                            <TableCell className="text-center text-slate-600 text-sm px-3 py-2.5 font-mono whitespace-nowrap">{data.rut}</TableCell>
                                             <TableCell className="text-center px-3 py-2.5">
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${badgeEstado(data.estadoReserva)}`}>
                                                     {data.estadoReserva}

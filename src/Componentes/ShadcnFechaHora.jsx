@@ -4,7 +4,6 @@ import * as React from "react"
 import {ChevronDownIcon} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Calendar} from "@/components/ui/calendar"
-import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {
     Popover,
@@ -14,27 +13,48 @@ import {
 
 export default function ShadcnFechaHora({onChange}) {
     const [open, setOpen] = React.useState(false)
-    const [date, setDate] = React.useState(undefined)
+    // Guardamos fecha como {year, month, day} para que nunca se pierda al cambiar hora
+    const [selectedDate, setSelectedDate] = React.useState(null)
     const [hour, setHour] = React.useState("10")
     const [minute, setMinute] = React.useState("30")
-    const time = `${hour.padStart(2, "0")}:${minute.padStart(2, "0")}:00`
 
-    const dateTime = React.useMemo(() => {
-        if (!date) return null
+    // Ref para evitar notificar al padre en el primer render
+    const isFirstRender = React.useRef(true)
 
-        const [hh = 0, mm = 0, ss = 0] = time.split(":").map(Number)
+    // Construir el Date solo cuando se necesita notificar
+    const buildDateTime = React.useCallback((d, hh, mm) => {
+        if (!d) return null
+        return new Date(d.year, d.month, d.day, Number(hh), Number(mm), 0, 0)
+    }, [])
 
-        // Construir desde año/mes/día locales para evitar desfase por timezone
-        const d = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hh, mm, ss, 0)
-        return d
-    }, [date, time])
-
-    // 🔔 Notificar al padre
+    // Notificar al padre cuando cambia fecha u hora
     React.useEffect(() => {
-        if (dateTime && onChange) {
-            onChange(dateTime)
+        if (isFirstRender.current) {
+            isFirstRender.current = false
+            return
         }
-    }, [dateTime, onChange])
+        if (!selectedDate || !onChange) return
+
+        const dt = buildDateTime(selectedDate, hour, minute)
+        if (dt) onChange(dt)
+    }, [selectedDate, hour, minute])
+
+    const handleDateSelect = React.useCallback((d) => {
+        if (!d) return
+        // Guardamos solo año/mes/día como valores planos
+        setSelectedDate({year: d.getFullYear(), month: d.getMonth(), day: d.getDate()})
+        setOpen(false)
+    }, [])
+
+    // Texto para mostrar la fecha seleccionada
+    const dateLabel = selectedDate
+        ? `${String(selectedDate.day).padStart(2, "0")}/${String(selectedDate.month + 1).padStart(2, "0")}/${selectedDate.year}`
+        : "Seleccionar"
+
+    // Reconstruir un Date para el Calendar selected (solo para marcar el día)
+    const calendarSelected = selectedDate
+        ? new Date(selectedDate.year, selectedDate.month, selectedDate.day)
+        : undefined
 
     return (
         <div className="flex gap-4">
@@ -42,23 +62,18 @@ export default function ShadcnFechaHora({onChange}) {
                 <Label className="px-1">Fecha</Label>
                 <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
-                        {/* Botón de fecha: azul oscuro con texto blanco */}
                         <Button variant="outline"
                                 className="w-32 justify-between font-normal bg-blue-900 text-white hover:bg-blue-800">
-                            {date ? date.toLocaleDateString() : "Seleccionar"}
+                            {dateLabel}
                             <ChevronDownIcon/>
                         </Button>
                     </PopoverTrigger>
-                    {/* Contenido del popover: fondo azul y texto blanco */}
                     <PopoverContent className="w-auto p-0">
                         <div className="bg-blue-900 text-white p-3 rounded-md">
                             <Calendar
                                 mode="single"
-                                selected={date}
-                                onSelect={(d) => {
-                                    setDate(d)
-                                    setOpen(false)
-                                }}
+                                selected={calendarSelected}
+                                onSelect={handleDateSelect}
                             />
                         </div>
                     </PopoverContent>

@@ -16,6 +16,7 @@ import {toast} from "react-hot-toast";
 import es from "date-fns/locale/es";
 import {InfoButton} from "@/Componentes/InfoButton";
 import * as React from "react";
+import {SelectDinamic} from "@/Componentes/SelectDinamic";
 
 const locales = {es: es};
 const dfStartOfWeek = (date) => startOfWeek(date, {locale: es});
@@ -60,6 +61,46 @@ export default function Calendario() {
     const [estadoReserva, setEstadoReserva] = useState("");
     const [id_reserva, setid_reserva] = useState(0);
     const [dataAgenda, setDataAgenda] = useState([]);
+    const [dataBloqueos, setDataBloqueos] = useState([]);
+    const [listaProfesionales, setListaProfesionales] = useState([]);
+    const [id_profesional, setId_profesional] = useState("");
+
+
+
+
+
+    async function seleccionarTodosProfesionalesCalendario() {
+        try {
+            const res = await fetch(`${API}/profesionales/seleccionarTodosProfesionales`, {
+                method: 'GET',
+                headers: {Accept: 'application/json'},
+                mode: 'cors'
+            })
+
+            if (!res.ok) {
+                return toast.error('Error al cargar los profesionales, por favor intente nuevamente.');
+
+            }else{
+                const respustaBackend = await res.json();
+
+                if(respustaBackend){
+                    setListaProfesionales(respustaBackend);
+
+                }else{
+                    return toast.error('Error al cargar los profesionales, por favor intente nuevamente.');
+                }
+            }
+        }catch (error) {
+            return toast.error('Error al cargar los profesionales, por favor intente nuevamente.');
+        }
+    }
+
+    useEffect(() => {
+        seleccionarTodosProfesionalesCalendario();
+    }, []);
+
+
+
 
     function formatearFechaLocal(d) {
         const y = d.getFullYear();
@@ -107,12 +148,60 @@ export default function Calendario() {
         }
     }
 
-    useEffect(() => { cargarDataAgenda(); }, []);
-
-    async function bloquearAgenda(fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion) {
+    async function cargarDataPorProfesional(idProf) {
         try {
-            if (!fechaInicio || !horaInicio || !horaFinalizacion) {
-                return toast.error('Debe llenar los campos de fechas para bloquear un periodo');
+            const res = await fetch(`${API}/reservaPacientes/seleccionarPorProfesional`, {
+                method: "POST",
+                headers: {Accept: "application/json", "Content-Type": "application/json"},
+                mode: "cors",
+                body: JSON.stringify({id_profesional: idProf})
+            });
+            if (!res.ok) return toast.error('No fue posible cargar las agendas del profesional');
+            const data = await res.json();
+            setDataAgenda(Array.isArray(data) ? data : []);
+        } catch (err) {
+            return toast.error(err.message);
+        }
+    }
+
+    async function cargarBloqueos() {
+        try {
+            const res = await fetch(`${API}/bloqueoAgenda/seleccionarTodos`, {
+                method: "GET",
+                headers: {Accept: "application/json"},
+                mode: "cors"
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            setDataBloqueos(Array.isArray(data) ? data : []);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function refrescarCalendario() {
+        if (id_profesional) {
+            await cargarDataPorProfesional(id_profesional);
+        } else {
+            await cargarDataAgenda();
+        }
+        await cargarBloqueos();
+    }
+
+    useEffect(() => { cargarDataAgenda(); cargarBloqueos(); }, []);
+
+    useEffect(() => {
+        if (id_profesional) {
+            cargarDataPorProfesional(id_profesional);
+        } else {
+            cargarDataAgenda();
+        }
+    }, [id_profesional]);
+
+    async function bloquearAgenda(fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, id_profesional) {
+        try {
+            if (!fechaInicio || !horaInicio || !horaFinalizacion || !id_profesional) {
+                return toast.error('Debe llenar los campos de fechas y seleccionar un profesional para bloquear un periodo');
             }
             const nombrePaciente = "AGENDA BLOQUEADA";
             const apellidoPaciente = "-";
@@ -131,12 +220,12 @@ export default function Calendario() {
                     method: "POST",
                     headers: {Accept: "application/json", "Content-Type": "application/json"},
                     mode: "cors",
-                    body: JSON.stringify({nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva: "reservada"})
+                    body: JSON.stringify({nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva: "reservada", id_profesional})
                 });
                 const respuestaBackend = await res.json();
                 if (respuestaBackend.message === true) {
                     setNombrePaciente(""); setApellidoPaciente(""); setTelefono(""); setRut(""); setEmail("");
-                    await cargarDataAgenda();
+                    await refrescarCalendario();
                     return toast.success("Se ha bloqueado el periodo indicado correctamente.");
                 } else if (respuestaBackend.message === "conflicto" || respuestaBackend.message.includes("conflicto")) {
                     return toast.error("No puede agendar una hora que ya esta ocupada");
@@ -152,9 +241,9 @@ export default function Calendario() {
         }
     }
 
-    async function insertarNuevaReserva(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion) {
+    async function insertarNuevaReserva(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion,id_profesional) {
         try {
-            if (!nombrePaciente || !apellidoPaciente || !rut || !telefono || !email || !fechaInicio || !horaInicio || !horaFinalizacion) {
+            if (!nombrePaciente || !apellidoPaciente || !rut || !telefono || !email || !fechaInicio || !horaInicio || !horaFinalizacion || !id_profesional) {
                 return toast.error('Debe llenar todos los campos');
             }
             const ahora = new Date();
@@ -165,16 +254,16 @@ export default function Calendario() {
             if (isOverlapping(inicio, final)) return toast.error('La hora seleccionada ya está ocupada (verifique otras horas)');
 
             if (fechaInicio === fechaFinalizacion) {
-                const res = await fetch(`${API}/reservaPacientes/insertarReserva`, {
+                const res = await fetch(`${API}/reservaPacientes/insertarReservaPacienteFicha`, {
                     method: "POST",
                     headers: {Accept: "application/json", "Content-Type": "application/json"},
                     mode: "cors",
-                    body: JSON.stringify({nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva: "reservada"})
+                    body: JSON.stringify({nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva: "reservada" ,id_profesional})
                 });
                 const respuestaBackend = await res.json();
                 if (respuestaBackend.message === true) {
                     setNombrePaciente(""); setApellidoPaciente(""); setTelefono(""); setRut(""); setEmail("");
-                    await cargarDataAgenda();
+                    await refrescarCalendario();
                     return toast.success("Se ha ingresado correctamente el agendamiento");
                 } else if (respuestaBackend.message === "conflicto" || respuestaBackend.message.includes("conflicto")) {
                     return toast.error("No puede agendar una hora que ya esta ocupada");
@@ -195,53 +284,74 @@ export default function Calendario() {
     }), []);
 
     useEffect(() => {
-        if (!dataAgenda || dataAgenda.length === 0) { setEvents([]); return; }
-        const eventosCalendario = dataAgenda.map((cita) => ({
+        const eventosReservas = (dataAgenda || []).map((cita) => ({
             id_reserva: cita.id_reserva,
             title: cita.nombrePaciente + " " + cita.apellidoPaciente,
             start: convertirAFechaCalendario(cita.fechaInicio, cita.horaInicio),
             end: convertirAFechaCalendario(cita.fechaFinalizacion, cita.horaFinalizacion),
+            tipo: "reserva",
         }));
-        setEvents(eventosCalendario);
-    }, [dataAgenda]);
+        const eventosBloqueos = (dataBloqueos || []).map((bloqueo) => ({
+            id_bloqueo: bloqueo.id_bloqueo,
+            title: "BLOQUEADO" + (bloqueo.motivo ? " - " + bloqueo.motivo : ""),
+            start: convertirAFechaCalendario(bloqueo.fechaInicio, bloqueo.horaInicio),
+            end: convertirAFechaCalendario(bloqueo.fechaFinalizacion, bloqueo.horaFinalizacion),
+            tipo: "bloqueo",
+        }));
+        setEvents([...eventosReservas, ...eventosBloqueos]);
+    }, [dataAgenda, dataBloqueos]);
 
-    const eventStyleGetter = () => ({
-        style: {
-            display: 'flex', alignItems: 'center', height: 'auto', minHeight: '28px', maxHeight: 'none',
-            whiteSpace: 'normal', overflow: 'visible', textOverflow: 'clip', lineHeight: '1.3',
-            padding: '6px 8px', fontSize: '0.8rem', boxSizing: 'border-box', borderRadius: '6px',
-            backgroundColor: '#0284c7', color: '#fff', fontWeight: '500', wordBreak: 'break-word',
-        },
-    });
+    const eventStyleGetter = (event) => {
+        const esBloqueo = event.tipo === "bloqueo";
+        return {
+            style: {
+                display: 'flex', alignItems: 'center', height: 'auto', minHeight: '28px', maxHeight: 'none',
+                whiteSpace: 'normal', overflow: 'visible', textOverflow: 'clip', lineHeight: '1.3',
+                padding: '6px 8px', fontSize: '0.8rem', boxSizing: 'border-box', borderRadius: '6px',
+                backgroundColor: esBloqueo ? '#dc2626' : '#0284c7',
+                color: '#fff', fontWeight: '500', wordBreak: 'break-word',
+            },
+        };
+    };
 
     const EventComponent = ({event}) => (
-        <div title={event.title} className="break-words text-[13px] leading-snug w-full" style={{whiteSpace: 'normal', overflow: 'visible', wordBreak: 'break-word', hyphens: 'auto'}}>
+        <div title={event.title} className="break-words text-[13px] leading-snug w-full flex items-center gap-1" style={{whiteSpace: 'normal', overflow: 'visible', wordBreak: 'break-word', hyphens: 'auto'}}>
+            {event.tipo === "bloqueo" && (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            )}
             {event.title}
         </div>
     );
 
     const TitleOnlyEvent = ({event}) => (
-        <div title={event.title} className="break-words text-[13px] leading-snug font-medium w-full" style={{whiteSpace: 'normal', overflow: 'visible', wordBreak: 'break-word'}}>
+        <div title={event.title} className="break-words text-[13px] leading-snug font-medium w-full flex items-center gap-1" style={{whiteSpace: 'normal', overflow: 'visible', wordBreak: 'break-word'}}>
+            {event.tipo === "bloqueo" && (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            )}
             {event.title}
         </div>
     );
 
-    async function actualizarInformacionReserva(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva, id_reserva) {
+    async function actualizarInformacionReserva(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva, id_profesional, id_reserva) {
         try {
-            if (!nombrePaciente || !apellidoPaciente || !rut || !telefono || !email || !fechaInicio || !horaInicio || !fechaFinalizacion || !horaFinalizacion || !estadoReserva || !id_reserva) {
+            if (!nombrePaciente || !apellidoPaciente || !rut || !telefono || !email || !fechaInicio || !horaInicio || !fechaFinalizacion || !horaFinalizacion || !estadoReserva || !id_profesional || !id_reserva) {
                 return toast.error("Debe llenar todos los campos para poder actualizar la reserva");
             }
             const res = await fetch(`${API}/reservaPacientes/actualizarReservacion`, {
                 method: "POST",
                 headers: {Accept: "application/json", "Content-Type": "application/json"},
                 mode: "cors",
-                body: JSON.stringify({nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva, id_reserva})
+                body: JSON.stringify({nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva, id_profesional, id_reserva})
             });
             if (!res.ok) return toast.error("El servidor no responde");
             const respuestaBackend = await res.json();
             if (respuestaBackend.message === true) {
                 setNombrePaciente(""); setApellidoPaciente(""); setTelefono(""); setRut(""); setEmail("");
-                await cargarDataAgenda();
+                await refrescarCalendario();
                 return toast.success("Se ha actualizado la reserva correctamente");
             }
         } catch (error) {
@@ -274,6 +384,7 @@ export default function Calendario() {
             setfechaFinalizacion((reserva.fechaFinalizacion ?? "").slice(0, 10));
             setHoraFinalizacion(reserva.horaFinalizacion ?? "");
             setEstadoReserva(reserva.estadoReserva ?? "");
+            setId_profesional(reserva.id_profesional ?? "");
         } catch (error) {
             console.log(error);
             return toast.error("El servidor no responde");
@@ -346,6 +457,19 @@ export default function Calendario() {
                                     <label className="block text-sm font-medium text-slate-700 mb-1.5">Teléfono</label>
                                     <ShadcnInput value={telefono ?? ""} onChange={(e) => setTelefono(e.target.value)}/>
                                 </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Profesional</label>
+                                    <SelectDinamic
+                                        value={id_profesional}
+                                        onChange={(e) => setId_profesional(e.target.value)}
+                                        options={listaProfesionales.map(profesional => ({
+                                            value: profesional.id_profesional,
+                                            label: profesional.nombreProfesional
+                                        }))}
+                                        placeholder="Selecciona un profesional"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -401,7 +525,7 @@ export default function Calendario() {
                         {/* Botones de acción */}
                         <div className="flex flex-wrap gap-2 pt-1">
                             <button
-                                onClick={() => insertarNuevaReserva(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion)}
+                                onClick={() => insertarNuevaReserva(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, id_profesional)}
                                 className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-sky-600 to-cyan-500 rounded-lg hover:from-sky-700 hover:to-cyan-600 transition-all duration-150 shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/>
@@ -410,7 +534,7 @@ export default function Calendario() {
                             </button>
 
                             <button
-                                onClick={() => actualizarInformacionReserva(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva, id_reserva)}
+                                onClick={() => actualizarInformacionReserva(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva, id_profesional, id_reserva)}
                                 className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-sky-700 bg-sky-50 border border-sky-200 rounded-lg hover:bg-sky-100 transition-colors duration-150">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -428,7 +552,7 @@ export default function Calendario() {
                             </button>
 
                             <button
-                                onClick={() => bloquearAgenda(fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion)}
+                                onClick={() => bloquearAgenda(fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, id_profesional)}
                                 className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors duration-150">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
@@ -452,6 +576,10 @@ export default function Calendario() {
                             <div className="flex items-center gap-1.5">
                                 <span className="inline-block w-3 h-3 rounded bg-sky-600"></span>
                                 <span className="text-xs text-slate-500">Reserva</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <span className="inline-block w-3 h-3 rounded bg-red-600"></span>
+                                <span className="text-xs text-slate-500">Bloqueado</span>
                             </div>
                             <span className="text-xs text-slate-400">Vista: <span className="font-medium text-slate-600 capitalize">{currentView}</span></span>
                         </div>
@@ -487,6 +615,9 @@ export default function Calendario() {
                                 return true;
                             }}
                             onSelectEvent={(event) => {
+                                if (event.tipo === "bloqueo") {
+                                    return toast("Bloqueo: " + (event.title || "Sin motivo"), {icon: "🔒"});
+                                }
                                 if (!event?.id_reserva) { toast.error("No se encontró el ID de la reserva"); return; }
                                 setid_reserva(event.id_reserva);
                                 seleccionarReservaEspecifica(event.id_reserva);

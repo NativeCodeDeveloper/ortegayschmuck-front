@@ -15,6 +15,8 @@ import {toast} from "react-hot-toast";
 
 
 import es from "date-fns/locale/es";
+import {SelectDinamic} from "@/Componentes/SelectDinamic";
+import {InfoButton} from "@/Componentes/InfoButton";
 
 const locales = {
     es: es,
@@ -102,7 +104,36 @@ export default function Calendario() {
     const [estadoReserva, setEstadoReserva,] = useState("");
     const [id_reserva, setid_reserva] = useState(0);
 
-    const [dataAgenda, setDataAgenda] = useState([] || []);
+    const [dataAgenda, setDataAgenda] = useState([]);
+    const [dataBloqueos, setDataBloqueos] = useState([]);
+    const [listaProfesionales, setListaProfesionales] = useState([]);
+    const [id_profesional, setId_profesional] = useState("");
+
+    async function seleccionarTodosProfesionalesCalendario() {
+        try {
+            const res = await fetch(`${API}/profesionales/seleccionarTodosProfesionales`, {
+                method: 'GET',
+                headers: {Accept: 'application/json'},
+                mode: 'cors'
+            })
+            if (!res.ok) {
+                return toast.error('Error al cargar los profesionales, por favor intente nuevamente.');
+            } else {
+                const respustaBackend = await res.json();
+                if (respustaBackend) {
+                    setListaProfesionales(respustaBackend);
+                } else {
+                    return toast.error('Error al cargar los profesionales, por favor intente nuevamente.');
+                }
+            }
+        } catch (error) {
+            return toast.error('Error al cargar los profesionales, por favor intente nuevamente.');
+        }
+    }
+
+    useEffect(() => {
+        seleccionarTodosProfesionalesCalendario();
+    }, []);
 
 
     function formatearFechaLocal(d) {
@@ -166,9 +197,58 @@ export default function Calendario() {
         }
     }
 
+    async function cargarDataPorProfesional(idProf) {
+        try {
+            const res = await fetch(`${API}/reservaPacientes/seleccionarPorProfesional`, {
+                method: "POST",
+                headers: {Accept: "application/json", "Content-Type": "application/json"},
+                mode: "cors",
+                body: JSON.stringify({id_profesional: idProf})
+            });
+            if (!res.ok) return toast.error('No fue posible cargar las agendas del profesional');
+            const data = await res.json();
+            setDataAgenda(Array.isArray(data) ? data : []);
+        } catch (err) {
+            return toast.error(err.message);
+        }
+    }
+
+    async function cargarBloqueos() {
+        try {
+            const res = await fetch(`${API}/bloqueoAgenda/seleccionarTodos`, {
+                method: "GET",
+                headers: {Accept: "application/json"},
+                mode: "cors"
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            setDataBloqueos(Array.isArray(data) ? data : []);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function refrescarCalendario() {
+        if (id_profesional) {
+            await cargarDataPorProfesional(id_profesional);
+        } else {
+            await cargarDataAgenda();
+        }
+        await cargarBloqueos();
+    }
+
     useEffect(() => {
-        cargarDataAgenda()
+        cargarDataAgenda();
+        cargarBloqueos();
     }, [])
+
+    useEffect(() => {
+        if (id_profesional) {
+            cargarDataPorProfesional(id_profesional);
+        } else {
+            cargarDataAgenda();
+        }
+    }, [id_profesional]);
 
 
     async function insertarNuevaReserva(
@@ -238,7 +318,7 @@ export default function Calendario() {
                     setTelefono("");
                     setRut("");
                     setEmail("");
-                    await cargarDataAgenda();
+                    await refrescarCalendario();
                     return toast.success("Se ha ingresado correctamente el agendamiento")
 
                 } else if (respuestaBackend.message === "conflicto" || respuestaBackend.message.includes("conflicto")) {
@@ -279,24 +359,25 @@ export default function Calendario() {
 
 
     useEffect(() => {
-        if (!dataAgenda || dataAgenda.length === 0) {
-            setEvents([]);
-            return;
-        }
-
-        const eventosCalendario = dataAgenda.map((cita) => ({
-            // id de la reserva para poder abrir el detalle al seleccionar
+        const eventosReservas = (dataAgenda || []).map((cita) => ({
             id_reserva: cita.id_reserva,
             title: cita.nombrePaciente + " " + cita.apellidoPaciente,
             start: convertirAFechaCalendario(cita.fechaInicio, cita.horaInicio),
             end: convertirAFechaCalendario(cita.fechaFinalizacion, cita.horaFinalizacion),
+            tipo: "reserva",
         }));
+        const eventosBloqueos = (dataBloqueos || []).map((bloqueo) => ({
+            id_bloqueo: bloqueo.id_bloqueo,
+            title: "BLOQUEADO" + (bloqueo.motivo ? " - " + bloqueo.motivo : ""),
+            start: convertirAFechaCalendario(bloqueo.fechaInicio, bloqueo.horaInicio),
+            end: convertirAFechaCalendario(bloqueo.fechaFinalizacion, bloqueo.horaFinalizacion),
+            tipo: "bloqueo",
+        }));
+        setEvents([...eventosReservas, ...eventosBloqueos]);
+    }, [dataAgenda, dataBloqueos]);
 
-        setEvents(eventosCalendario);
-    }, [dataAgenda]);
-
-    // Permite que el contenido del evento haga wrap y no se corte en vistas con poco espacio
-    const eventStyleGetter = (..._args) => {
+    const eventStyleGetter = (event) => {
+        const esBloqueo = event.tipo === "bloqueo";
         return {
             style: {
                 display: 'flex',
@@ -312,7 +393,7 @@ export default function Calendario() {
                 fontSize: '0.8rem',
                 boxSizing: 'border-box',
                 borderRadius: '4px',
-                backgroundColor: '#0284c7',
+                backgroundColor: esBloqueo ? '#dc2626' : '#0284c7',
                 color: '#fff',
                 fontWeight: '500',
                 wordBreak: 'break-word',
@@ -320,41 +401,27 @@ export default function Calendario() {
         };
     };
 
-    // Componente ligero para renderizar el título del evento permitiendo salto de línea
-    const EventComponent = ({event}) => {
-        // Usamos title para mostrar tooltip nativo con el nombre completo
-        return (
-            <div
-                title={event.title}
-                className="break-words text-[13px] leading-snug w-full"
-                style={{
-                    whiteSpace: 'normal',
-                    overflow: 'visible',
-                    wordBreak: 'break-word',
-                    hyphens: 'auto',
-                }}
-            >
-                {event.title}
-            </div>
-        );
-    };
+    const EventComponent = ({event}) => (
+        <div title={event.title} className="break-words text-[13px] leading-snug w-full flex items-center gap-1" style={{whiteSpace: 'normal', overflow: 'visible', wordBreak: 'break-word', hyphens: 'auto'}}>
+            {event.tipo === "bloqueo" && (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            )}
+            {event.title}
+        </div>
+    );
 
-    // Componente que muestra SOLO el título (para vistas Day y Agenda)
-    const TitleOnlyEvent = ({event}) => {
-        return (
-            <div
-                title={event.title}
-                className="break-words text-[13px] leading-snug font-medium w-full"
-                style={{
-                    whiteSpace: 'normal',
-                    overflow: 'visible',
-                    wordBreak: 'break-word',
-                }}
-            >
-                {event.title}
-            </div>
-        );
-    };
+    const TitleOnlyEvent = ({event}) => (
+        <div title={event.title} className="break-words text-[13px] leading-snug font-medium w-full flex items-center gap-1" style={{whiteSpace: 'normal', overflow: 'visible', wordBreak: 'break-word'}}>
+            {event.tipo === "bloqueo" && (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            )}
+            {event.title}
+        </div>
+    );
 
 
     async function actualizarInformacionReserva(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva, id_reserva) {
@@ -394,7 +461,7 @@ export default function Calendario() {
                     setTelefono("");
                     setRut("");
                     setEmail("");
-                    await cargarDataAgenda()
+                    await refrescarCalendario()
                     return toast.success("Se ha actualizado la reserva correctamente")
                 }
             }
@@ -482,21 +549,40 @@ export default function Calendario() {
             <ToasterClient/>
 
             <div className="mx-auto w-full max-w-7xl">
-                <div className="mb-6 flex flex-col gap-2">
-                    <h1 className="text-2xl md:text-5xl font-bold tracking-tight text-slate-900">Calendario General</h1>
-                    <p className="text-sm text-slate-600">Revisa tus reservas y actividades.</p>
+                <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl md:text-5xl font-bold tracking-tight text-slate-900">Calendario General</h1>
+                        <p className="text-sm text-slate-600">Revisa tus reservas y actividades.</p>
+                    </div>
+                    <InfoButton informacion={"Este apartado le permite tener una vista rápida y general de todos los horarios agendados y los bloqueos de agenda registrados en el sistema.\n\nPara ingresar nuevos agendamientos o citas, debe dirigirse al módulo de Ingreso de Agendamientos.\n\nPara registrar bloqueos de agenda, debe utilizar el módulo de Bloqueo de Agenda.\n\nEste calendario es únicamente de consulta y visualización."}/>
                 </div>
 
 
                 <div className="mt-10">
                     <div className="bg-white/90 backdrop-blur-sm shadow-lg rounded-2xl border border-slate-200 ring-1 ring-black/5 overflow-hidden">
                         <div className="px-6 py-4 border-b border-slate-200 bg-white">
-                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                 <div>
                                     <h3 className="text-sm font-semibold text-slate-900">Calendario de Reservas</h3>
                                     <p className="text-xs text-slate-500">Navega por mes/semana/día y selecciona una reserva para ver su detalle.</p>
                                 </div>
-                                <div className="text-xs text-slate-500">Vista: <span className="font-medium text-slate-700">{currentView}</span></div>
+                                <div className="flex items-center gap-4">
+                                    <div className="w-64">
+                                        <SelectDinamic
+                                            value={id_profesional}
+                                            onChange={(e) => setId_profesional(e.target.value)}
+                                            options={[
+                                                {value: "", label: "Todos los profesionales"},
+                                                ...listaProfesionales.map(profesional => ({
+                                                    value: profesional.id_profesional,
+                                                    label: profesional.nombreProfesional
+                                                }))
+                                            ]}
+                                            placeholder="Filtrar por profesional"
+                                        />
+                                    </div>
+                                    <div className="text-xs text-slate-500">Vista: <span className="font-medium text-slate-700">{currentView}</span></div>
+                                </div>
                             </div>
                         </div>
                         <div className="p-6 h-[700px]">
@@ -541,6 +627,9 @@ export default function Calendario() {
                                 }}
 
                                 onSelectEvent={(event) => {
+                                    if (event.tipo === "bloqueo") {
+                                        return toast("Bloqueo: " + (event.title || "Sin motivo"), {icon: "🔒"});
+                                    }
                                     if (!event?.id_reserva) {
                                         toast.error("No se encontró el ID de la reserva");
                                         return;
@@ -574,9 +663,15 @@ export default function Calendario() {
                             />
                             {/* Leyenda / ayuda */}
                             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-600 mt-6">
-                                <span className="inline-block w-3 h-3 rounded-sm bg-sky-600" aria-hidden="true"/>
-                                <span>Reserva</span>
-                                <span className="text-xs italic text-slate-500">Pasa el cursor sobre una reserva para ver el nombre completo</span>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="inline-block w-3 h-3 rounded-sm bg-sky-600" aria-hidden="true"/>
+                                    <span>Reserva</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="inline-block w-3 h-3 rounded-sm bg-red-600" aria-hidden="true"/>
+                                    <span>Bloqueado</span>
+                                </div>
+                                <span className="text-xs italic text-slate-500">Pasa el cursor sobre un evento para ver el detalle</span>
                             </div>
                         </div>
                     </div>
