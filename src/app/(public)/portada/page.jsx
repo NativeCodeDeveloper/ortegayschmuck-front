@@ -1,112 +1,193 @@
 "use client";
 
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const heroGallery = [
-  { src: "/cportada3.png", alt: "Clínica moderna - vista 1" },
-  { src: "/cportada1.png", alt: "Clínica moderna - vista 2" },
-  { src: "/cportada2.png", alt: "Clínica moderna - vista 3" },
+const defaultHeroSlides = [
+  {
+    id: "hero-1",
+    image: "/portada1.png",
+    alt: "Clinica premium Ortega & Schmuck",
+    badge: "Experiencia premium",
+    title: "Diseno clinico de alta precision.",
+    text: "Protocolos personalizados para resultados naturales en odontologia y medicina estetica.",
+  },
+  {
+    id: "hero-2",
+    image: "/portada2.png",
+    alt: "Paciente en evaluacion estetica",
+    badge: "Tecnologia avanzada",
+    title: "Resultados elegantes y medibles.",
+    text: "Analisis integral, plan por etapas y acompanamiento continuo en cada tratamiento.",
+  },
+  {
+    id: "hero-3",
+    image: "/portada3.png",
+    alt: "Equipo clinico especializado",
+    badge: "Atencion personalizada",
+    title: "Tu armonia facial y dental en un solo lugar.",
+    text: "Integramos criterio medico y estetico para lograr una experiencia moderna y segura.",
+  },
 ];
 
-export default function Portada() {
+export default function Portada({ slides = defaultHeroSlides }) {
+  const safeSlides = useMemo(
+    () => (slides.length > 0 ? slides : defaultHeroSlides),
+    [slides]
+  );
+  const [activeIndex, setActiveIndex] = useState(0);
+  const touchStartX = useRef(null);
+
+  useEffect(() => {
+    if (safeSlides.length <= 1) return undefined;
+
+    const intervalId = setInterval(() => {
+      setActiveIndex((current) => (current + 1) % safeSlides.length);
+    }, 5200);
+
+    return () => clearInterval(intervalId);
+  }, [safeSlides.length]);
+
+  const goPrev = () => {
+    setActiveIndex((current) => (current - 1 + safeSlides.length) % safeSlides.length);
+  };
+
+  const goNext = () => {
+    setActiveIndex((current) => (current + 1) % safeSlides.length);
+  };
+
+  const handleTouchStart = (event) => {
+    touchStartX.current = event.touches[0]?.clientX ?? null;
+  };
+
+  const handleTouchEnd = (event) => {
+    if (touchStartX.current == null) return;
+
+    const endX = event.changedTouches[0]?.clientX ?? touchStartX.current;
+    const distance = endX - touchStartX.current;
+
+    if (Math.abs(distance) > 45) {
+      if (distance > 0) {
+        goPrev();
+      } else {
+        goNext();
+      }
+    }
+
+    touchStartX.current = null;
+  };
+
   return (
     <section
       id="inicio"
-      className="relative scroll-mt-28 overflow-hidden bg-[#f6f7fb] text-[#111827] md:scroll-mt-32"
+      className="relative min-h-screen scroll-mt-24 overflow-hidden bg-black text-white"
     >
-      <div className="pointer-events-none absolute inset-0 hidden md:block">
-        <video
-          className="h-full w-full object-cover object-center"
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster="/portada1.png"
-        >
-          <source src="/videoportada3.mp4" type="video/mp4" />
-        </video>
-      </div>
-      <div className="pointer-events-none absolute inset-0 bg-[#f6f7fb]/95 md:bg-[#f6f7fb]/72" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(148,163,184,0.25),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(59,130,246,0.16),transparent_42%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_12%,rgba(133,139,149,0.2),transparent_40%),radial-gradient(circle_at_90%_0%,rgba(255,255,255,0.08),transparent_35%)]" />
 
-      <div className="relative z-10 mx-auto grid min-h-[calc(100svh-86px)] md:min-h-[calc(100svh-94px)] w-full max-w-7xl gap-10 px-6 pb-14 pt-20 sm:gap-12 sm:pb-16 sm:pt-24 md:px-10 md:pb-24 md:pt-28 lg:grid-cols-[1.1fr_1fr] lg:items-center xl:px-12">
-        <div>
-          <p className="inline-flex items-center rounded-full border border-white/70 bg-white/85 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-700 shadow-sm backdrop-blur">
-            Médico cirujano y medicina estética
-          </p>
+      <div className="relative mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-7xl items-center px-5 py-10 sm:py-14 md:min-h-[calc(100vh-6rem)] md:px-8 lg:px-10">
+        <div className="relative w-full overflow-hidden rounded-[2rem] border border-white/15 bg-zinc-900/40 shadow-[0_34px_90px_-56px_rgba(0,0,0,0.95)]">
+          <div
+            className="relative min-h-[600px]"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {safeSlides.map((slide, index) => {
+              const isActive = index === activeIndex;
 
-          <h1 className="mt-8 text-balance text-4xl font-semibold leading-[1.04] tracking-tight text-slate-900 [font-family:var(--font-cormorant)] sm:text-5xl lg:text-6xl">
-            Dr. Renzo Tais
-          </h1>
+              return (
+                <article
+                  key={slide.id}
+                  className={[
+                    "absolute inset-0 transition-opacity duration-700 ease-out",
+                    isActive ? "opacity-100" : "pointer-events-none opacity-0",
+                  ].join(" ")}
+                >
+                  <Image
+                    src={slide.image}
+                    alt={slide.alt}
+                    fill
+                    priority={index === 0}
+                    sizes="(max-width: 768px) 100vw, 1200px"
+                    className="object-cover object-center"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(5,5,6,0.92)_0%,rgba(8,8,8,0.55)_45%,rgba(12,12,12,0.42)_100%)]" />
 
-          <p className="mt-7 max-w-2xl text-justify text-base leading-relaxed text-slate-600 sm:text-lg">
-            Médico Cirujano, Especialista en Medicina Estética.
-            Clínica moderna y acogedora, especializada en tratamientos estéticos no invasivos, 
-            con un enfoque personalizado y resultados naturales. En nuestra clínica, nos dedicamos a realzar tu belleza única a través de procedimientos 
-            seguros y efectivos, utilizando la más avanzada tecnología en el mercado para ofrecerte una experiencia excepcional y resultados que superan tus expectativas. 
-            <br />
-            <br />
-            Descubre una nueva era de cuidado estético en nuestra
-            clínica, donde tu bienestar y satisfacción son nuestra máxima prioridad.
-          </p>
+                  <div className="absolute inset-x-0 bottom-0 top-0 flex items-end px-6 pb-10 pt-20 sm:px-10 sm:pb-12 md:px-14">
+                    <div className="max-w-2xl">
+                      <p className="text-[11px] uppercase tracking-[0.28em] text-white/70">
+                        {slide.badge}
+                      </p>
+                      <h1 className="mt-4 text-balance text-4xl font-light leading-tight tracking-[0.02em] text-white sm:text-5xl lg:text-6xl">
+                        Medicina y odontologia estetica
+                      </h1>
+                      <h2 className="mt-4 text-balance text-2xl font-light leading-tight tracking-[0.02em] text-white/95 sm:text-3xl lg:text-4xl">
+                        {slide.title}
+                      </h2>
+                      <p className="mt-5 max-w-xl text-sm leading-8 tracking-[0.02em] text-white/80 sm:text-base">
+                        {slide.text}
+                      </p>
 
+                      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <Link
+                          href="/reserva-hora"
+                          aria-label="Agendar hora"
+                          className="inline-flex w-full justify-center rounded-full border border-white/20 bg-white px-7 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-black transition duration-300 ease-out hover:bg-white/90 sm:w-auto"
+                        >
+                          Agendar hora
+                        </Link>
+                        <Link
+                          href="/#servicios"
+                          aria-label="Ir a servicios"
+                          className="inline-flex w-full justify-center rounded-full border border-white/35 bg-white/10 px-7 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white transition duration-300 ease-out hover:bg-white/20 sm:w-auto"
+                        >
+                          Conoce nuestros servicios
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
 
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Link
-              href="/contacto"
-              className="rounded-full bg-slate-900 px-7 py-3 text-sm font-medium text-white transition hover:bg-slate-700"
-            >
-              Solicitar evaluación
-            </Link>
-            <Link
-              href="/servicios"
-              className="rounded-full border border-slate-300 bg-white/95 px-7 py-3 text-sm font-medium text-slate-800 transition hover:border-slate-400 hover:bg-white"
-            >
-              Ver servicios
-            </Link>
-          </div>
-
-          <div className="mt-12 grid max-w-xl grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5">
-            {[
-              { label: "Médico Cirujano", value: "MD" },
-              { label: "Medicina Estética", value: "UBA" },
-              { label: "Especialidad", value: "Nefrología" },
-            ].map((item) => (
-              <article
-                key={item.label}
-                className="min-w-0 rounded-2xl border border-white/70 bg-white/80 p-4 shadow-sm backdrop-blur sm:p-5"
-              >
-                <p className="truncate text-base font-semibold leading-tight text-slate-900 sm:text-xl">
-                  {item.value}
-                </p>
-                <p className="mt-2 text-[11px] leading-snug text-slate-600 sm:text-xs">
-                  {item.label}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <div className="relative mx-auto w-full max-w-[26rem] lg:mx-0 lg:max-w-none">
-          <Image
-            src="/dr2.png"
-            alt="Dr. Renzo Tais - imagen principal"
-            width={1200}
-            height={1500}
-            priority
-            className="h-auto w-full object-contain"
-          />
-
-          <div className="mt-4 grid grid-cols-3 gap-3 sm:mt-6 sm:gap-4">
-            {heroGallery.map((item) => (
-              <div
-                key={item.src}
-                className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/70 bg-white"
-              >
-                <Image src={item.src} alt={item.alt} fill className="object-cover" />
+            <div className="absolute inset-x-0 bottom-5 z-20 flex items-center justify-between px-4 sm:px-6">
+              <div className="flex items-center gap-2">
+                {safeSlides.map((slide, index) => (
+                  <button
+                    key={slide.id}
+                    type="button"
+                    aria-label={`Mostrar slide ${index + 1}`}
+                    onClick={() => setActiveIndex(index)}
+                    className={[
+                      "h-2.5 rounded-full transition-all duration-300",
+                      activeIndex === index
+                        ? "w-8 bg-white"
+                        : "w-2.5 bg-white/45 hover:bg-white/70",
+                    ].join(" ")}
+                  />
+                ))}
               </div>
-            ))}
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  aria-label="Slide anterior"
+                  onClick={goPrev}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/35 text-white transition duration-300 hover:bg-black/55"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Siguiente slide"
+                  onClick={goNext}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/35 text-white transition duration-300 hover:bg-black/55"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

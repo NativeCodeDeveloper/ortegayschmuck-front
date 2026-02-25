@@ -1,98 +1,75 @@
-"use client";
+import { Cpu, ShieldCheck, Sparkles, UserRound } from "lucide-react";
+import RevealOnScroll from "@/Componentes/RevealOnScroll";
 
-import Image from "next/image";
-
-const procedimientos = [
+const pillars = [
   {
-    title: "Cirugía Plástica Mamaria",
-    text: "Aumento mamario, mastopexia, reducción mamaria y recambio de implantes con planificación personalizada.",
-    image: "/cirugiamamaria.png",
+    title: "Tecnologia avanzada",
+    text: "Equipamiento de ultima generacion para diagnosticos claros y decisiones de alta precision.",
+    icon: Cpu,
   },
   {
-    title: "Contorno Corporal",
-    text: "Lipoescultura, abdominoplastía y armonización de silueta para resultados proporcionales y naturales.",
-    image: "/foto4.avif",
+    title: "Profesionales especializados",
+    text: "Equipo clinico con formacion continua para ofrecer protocolos seguros y actualizados.",
+    icon: ShieldCheck,
   },
   {
-    title: "Cirugía Facial",
-    text: "Blefaroplastia, rinoplastia y rejuvenecimiento facial orientado a preservar expresión y equilibrio.",
-    image: "/foto1.avif",
+    title: "Enfoque estetico premium",
+    text: "Buscamos armonia y naturalidad con una planificacion individual en cada paciente.",
+    icon: Sparkles,
   },
   {
-    title: "Cirugía Masculina",
-    text: "Protocolos específicos para pacientes masculinos con foco en definición, funcionalidad y estética.",
-    image: "/foto3.avif",
-  },
-  {
-    title: "Cirugía Íntima y Reconstructiva",
-    text: "Abordaje médico integral para indicaciones estéticas y reconstructivas según cada caso clínico.",
-    image: "/intimafem.jpg",
-  },
-  {
-    title: "Medicina Estética Integral",
-    text: "Tratamientos no invasivos para calidad de piel, firmeza y prevención del envejecimiento.",
-    image: "/foto2.avif",
+    title: "Atencion personalizada",
+    text: "Acompanamiento cercano antes, durante y despues del tratamiento.",
+    icon: UserRound,
   },
 ];
 
 export default function Seccion1() {
   return (
-    <section id="doctor" className="scroll-mt-[96px] bg-white py-20 md:scroll-mt-[108px] md:py-24">
-      <div className="mx-auto w-full max-w-7xl px-6 md:px-10 xl:px-12">
-        <div className="grid gap-12 lg:grid-cols-[1fr_1.25fr] lg:items-center xl:gap-16">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-100 shadow-[0_24px_70px_-38px_rgba(15,23,42,0.45)]">
-            <Image
-              src="/renzo1.png"
-              alt="Dr. Renzo Tais"
-              fill
-              className="object-cover object-center"
-            />
-          </div>
+    <section
+      id="porque-elegirnos"
+      className="scroll-mt-24 bg-black py-20 text-white sm:py-24"
+    >
+      <div className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-10">
+        <RevealOnScroll>
+          <p className="text-xs uppercase tracking-[0.24em] text-white/65">Por que elegirnos</p>
+          <h2 className="mt-4 max-w-3xl text-balance text-3xl font-light leading-tight tracking-[0.02em] sm:text-4xl lg:text-5xl">
+            Una clinica premium pensada para resultados naturales y medibles.
+          </h2>
+        </RevealOnScroll>
 
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-              Dr. Renzo Tais
-            </p>
-            <h2 className="mt-5 text-3xl leading-tight text-slate-900 sm:text-4xl">
-              Profesional de la medicina estética integral con enfoque quirúrgico y no
-              invasivo.
-            </h2>
-            <p className="mt-6 text-base text-justify leading-relaxed text-slate-600">
-              El enfoque clínico se basa en evaluación personalizada, indicación honesta y
-              seguimiento cercano. Cada procedimiento busca armonía facial/corporal,
-              seguridad y resultados naturales en el tiempo.
-            </p>
-            <p className="mt-5 text-base text-justify leading-relaxed text-slate-600">
-              Esta base replica la estructura de servicios del sitio anterior para migrar
-              contenido sin perder información, pero con una presentación mucho más premium.
-            </p>
-          </div>
-        </div>
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {pillars.map((item, index) => {
+            const Icon = item.icon;
 
-        <div className="mt-20 md:mt-24">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-            Áreas de trabajo
-          </p>
-          <h3 className="mt-5 max-w-3xl text-3xl leading-tight text-slate-900 sm:text-4xl">
-            Resultados naturales y armónicos.
-          </h3>
-
-          <div className="mt-12 grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-            {procedimientos.map((item) => (
-              <article
+            return (
+              <RevealOnScroll
                 key={item.title}
-                className="overflow-hidden rounded-3xl border border-slate-200 bg-[#f8fafc] shadow-sm"
+                className="h-full"
+                delayClass={
+                  index === 0
+                    ? "delay-75"
+                    : index === 1
+                    ? "delay-100"
+                    : index === 2
+                    ? "delay-150"
+                    : "delay-200"
+                }
               >
-                <div className="relative aspect-[16/10]">
-                  <Image src={item.image} alt={item.title} fill className="object-cover" />
-                </div>
-                <div className="p-7">
-                  <h4 className="text-xl leading-tight text-slate-900">{item.title}</h4>
-                  <p className="mt-4 text-sm leading-relaxed text-slate-600">{item.text}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+                <article className="h-full rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(37,37,38,0.95)_0%,rgba(14,14,15,0.98)_100%)] p-6 transition duration-300 ease-out hover:-translate-y-1 hover:border-white/20">
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/5">
+                    <Icon className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="mt-5 text-xl font-light tracking-[0.01em] text-white">
+                    {item.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-7 tracking-[0.02em] text-white/75">
+                    {item.text}
+                  </p>
+                </article>
+              </RevealOnScroll>
+            );
+          })}
         </div>
       </div>
     </section>
