@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
-export default function OrbBackground({ children }) {
+export default function OrbBackground({ children, orbX = 0.60, orbY = 0.58 }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -64,9 +64,8 @@ export default function OrbBackground({ children }) {
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const cx = canvas.width * 0.60;
-      // Posicionar el orbe más abajo para que no quede detrás del título
-      const cy = canvas.height * 0.58;
+      const cx = canvas.width * orbX;
+      const cy = canvas.height * orbY;
       const radius = Math.min(canvas.width, canvas.height) * 0.44;
 
       // Glow ambiental detrás del orbe

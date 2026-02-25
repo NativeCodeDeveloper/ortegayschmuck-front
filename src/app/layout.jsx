@@ -1,7 +1,7 @@
 import "./globals.css";
 import { AnimatedLayout } from "@/Componentes/AnimatedLayout";
 import AgendaProvider from "@/ContextosGlobales/AgendaContext";
-import { Lato, Montserrat } from "next/font/google";
+import { Inter, Lato, Michroma, Montserrat } from "next/font/google";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -13,6 +13,18 @@ const lato = Lato({
   subsets: ["latin"],
   variable: "--font-lato",
   weight: ["300", "400", "700"],
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  weight: ["300", "400", "500", "600"],
+});
+
+const michroma = Michroma({
+  subsets: ["latin"],
+  variable: "--font-michroma",
+  weight: ["400"],
 });
 
 export const metadataBase = new URL(
@@ -70,7 +82,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es" className={`${montserrat.variable} ${lato.variable}`}>
+    <html lang="es" className={`${montserrat.variable} ${lato.variable} ${inter.variable} ${michroma.variable}`}>
       <body className="min-h-screen bg-white">
         <AnimatedLayout>
           <AgendaProvider>{children}</AgendaProvider>
