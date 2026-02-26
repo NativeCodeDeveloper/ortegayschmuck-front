@@ -33,17 +33,18 @@ export const metadataBase = new URL(
 
 export const metadata = {
   title: {
-    default: "Ortega & Schmuck | Odontologia y Medicina Estetica",
+    default: "Ortega & Schmuck | Clínica Dental Premium",
     template: "%s | Ortega & Schmuck",
   },
   description:
-    "Sitio oficial de Ortega & Schmuck. Odontologia y medicina estetica premium con tecnologia avanzada y planes personalizados.",
+    "Sitio oficial de Ortega & Schmuck. Odontología clínica integral con tecnología avanzada y planes personalizados.",
   keywords: [
     "Ortega & Schmuck",
-    "odontologia estetica",
-    "medicina estetica",
-    "armonizacion facial",
+    "clinica dental",
+    "odontologia integral",
+    "rehabilitacion oral",
     "diseno de sonrisa",
+    "implantes dentales",
     "clinica premium",
   ],
   authors: [{ name: "Ortega & Schmuck", url: metadataBase.href }],
@@ -59,9 +60,9 @@ export const metadata = {
     canonical: metadataBase.href,
   },
   openGraph: {
-    title: "Ortega & Schmuck | Odontologia y Medicina Estetica",
+    title: "Ortega & Schmuck | Clínica Dental Premium",
     description:
-      "Experiencia clinica premium con enfoque integral en odontologia y medicina estetica.",
+      "Experiencia clínica premium con enfoque integral en odontología y rehabilitación oral.",
     url: metadataBase.href,
     siteName: "Ortega & Schmuck",
     locale: "es_CL",
@@ -71,7 +72,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Ortega & Schmuck",
     description:
-      "Odontologia y medicina estetica premium con protocolos personalizados.",
+      "Odontología clínica premium con protocolos personalizados.",
   },
 };
 

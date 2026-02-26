@@ -360,11 +360,11 @@ function CatalogoSuspense(){
                     </h1>
 
                     <p className="hidden md:block mx-auto mt-4 max-w-4xl text-center text-sm leading-relaxed tracking-wide text-white/95">
-                        Diseñado para hombres y mujeres que buscan una piel saludable, libre de vello encarnado e irritación. Entendemos que la verdadera comodidad nace de una rutina sin complicaciones; por eso, nuestra tecnología Trilaser ofrece una solución definitiva que prioriza tu higiene y bienestar. Recupera la suavidad y el confort total en tu día a día con resultados visibles desde la primera sesión
+                        Diseñado para pacientes que buscan atención odontológica moderna, segura y efectiva. Nuestra planificación clínica combina tecnología y protocolos personalizados para mejorar tu salud oral y tu confianza desde la primera sesión.
                     </p>
 
                     <p className="md:hidden mx-auto mt-4 max-w-3xl text-center text-sm leading-relaxed tracking-wide text-white/95">
-                        Diseñado para hombres y mujeres que buscan una piel saludable.
+                        Diseñado para pacientes que buscan atención odontológica de excelencia.
                     </p>
                 </div>
             </div>
@@ -378,10 +378,10 @@ function CatalogoSuspense(){
 
              <div className="relative mt-4">
                  <p className="mx-auto max-w-2xl text-center text-base sm:text-xl font-extrabold tracking-tight text-slate-800">
-                     Selecciona tu categoría y descubre el plan perfecto para transformar tu rutina
+                     Selecciona tu categoría y descubre el plan ideal para tu salud oral
                  </p>
                  <p className="mx-auto mt-1 max-w-2xl text-center text-xs sm:text-sm text-slate-500">
-                     Elige Mujer u Hombre para ver servicios y precios recomendados.
+                     Elige una categoría para ver servicios y valores referenciales.
                  </p>
 
                  <div className="mt-5 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
@@ -523,7 +523,7 @@ function CatalogoSuspense(){
                                 {/* Badge */}
                                 <div className="absolute left-4 top-4">
                                     <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-[11px] font-extrabold tracking-[0.22em] text-slate-800 ring-1 ring-slate-200 backdrop-blur">
-                                        TRILASER
+                                        CLÍNICA
                                     </span>
                                 </div>
                             </div>
@@ -534,7 +534,7 @@ function CatalogoSuspense(){
                                     {subsubcategoria.descripcionSubSubCategoria}
                                 </h1>
                                 <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600">
-                                    Depilación láser segura y efectiva. Resultados visibles desde la primera sesión.
+                                    Atención odontológica segura y planificada, con resultados progresivos según diagnóstico clínico.
                                 </p>
                                 <div className="mt-5 h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
                                 {/* Botón único */}

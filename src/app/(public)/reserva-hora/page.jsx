@@ -46,7 +46,7 @@ function ReservaHoraContent() {
               <p className="mt-2 text-slate-700">
                 Su hora con{" "}
                 <span className="font-semibold text-slate-900">
-                  Dr. Renzo Tais
+                  el equipo clínico de Ortega & Schmuck
                 </span>{" "}
                 ha sido reservada con éxito.
               </p>
@@ -112,7 +112,7 @@ function ReservaHoraContent() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-slate-900">Ubicación</p>
-                    <p className="text-sm text-slate-600">Dr. Renzo Tais, Avenida Irarrázaval 1989 OF 204 SUR, Ñuñoa, Santiago, Chile</p>
+                    <p className="text-sm text-slate-600">Clínica Ortega & Schmuck, Providencia, Santiago de Chile</p>
                   </div>
                 </div>
               </div>

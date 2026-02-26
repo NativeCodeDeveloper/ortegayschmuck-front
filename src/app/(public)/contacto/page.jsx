@@ -21,14 +21,14 @@ const contactCards = [
   },
   {
     title: "Email",
-    value: "drtaismedestetica@gmail.com",
-    href: "mailto:drtaismedestetica@gmail.com",
+    value: "contacto@ortegaschmuck.cl",
+    href: "mailto:contacto@ortegaschmuck.cl",
     icon: Mail,
   },
   {
     title: "Instagram",
-    value: "@dr.renzotais",
-    href: "https://www.instagram.com/dr.renzotais",
+    value: "@ortegaschmuck.cl",
+    href: "https://www.instagram.com/ortegaschmuck.cl",
     icon: Instagram,
   },
 ];

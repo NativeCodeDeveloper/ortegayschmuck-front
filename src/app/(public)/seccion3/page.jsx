@@ -3,47 +3,29 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Instagram, MapPin, MessageCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import RevealOnScroll from "@/Componentes/RevealOnScroll";
 
 const clinicalCases = [
   {
-    title: "Armonizacion de sonrisa",
-    description: "Mejora de proporciones dentales y faciales con un protocolo conservador.",
+    title: "Rehabilitación de sonrisa",
+    description: "Recuperación funcional y estética dental con un protocolo clínico conservador.",
     image: "/7.png",
   },
   {
-    title: "Definicion mandibular",
-    description: "Plan de armonizacion facial para lograr un perfil elegante y natural.",
+    title: "Alineación dental",
+    description: "Planificación ortodóncica para mejorar mordida, función y armonía de la sonrisa.",
     image: "/8.png",
   },
   {
-    title: "Rejuvenecimiento no invasivo",
-    description: "Tratamiento progresivo para firmeza y luminosidad sin perder identidad.",
+    title: "Blanqueamiento clínico",
+    description: "Tratamiento progresivo para recuperar luminosidad dental preservando la estructura.",
     image: "/12.png",
   },
   {
-    title: "Contorno facial integral",
-    description: "Enfoque combinado para equilibrar volumen, textura y estructura.",
+    title: "Carillas dentales",
+    description: "Enfoque restaurador para mejorar forma, color y proporción con resultados naturales.",
     image: "/10.png",
-  },
-];
-
-const socialLinks = [
-  {
-    label: "Instagram",
-    href: "https://www.instagram.com/dr.renzotais",
-    icon: Instagram,
-  },
-  {
-    label: "WhatsApp",
-    href: "https://wa.me/56994836980",
-    icon: MessageCircle,
-  },
-  {
-    label: "Ubicacion",
-    href: "https://maps.google.com/?q=Providencia,+Santiago,+Chile",
-    icon: MapPin,
   },
 ];
 
@@ -79,7 +61,7 @@ export default function Seccion3() {
               <div>
                 <p className="text-xs uppercase tracking-[0.24em] text-white/65">Casos clinicos</p>
                 <h2 className="mt-4 max-w-3xl text-balance text-3xl font-light leading-tight tracking-[0.02em] sm:text-4xl lg:text-5xl">
-                  Resultados reales, planificados con criterio medico y estetico.
+                  Resultados reales, planificados con criterio clínico y odontológico.
                 </h2>
               </div>
 
@@ -153,7 +135,7 @@ export default function Seccion3() {
             <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,#111_0%,#050505_55%,#1a1a1a_100%)] px-6 py-14 text-center sm:px-10">
               <p className="text-xs uppercase tracking-[0.24em] text-white/60">Agenda premium</p>
               <h2 className="mx-auto mt-4 max-w-3xl text-balance text-3xl font-light leading-tight tracking-[0.02em] sm:text-4xl lg:text-5xl">
-                Reserva tu evaluacion y recibe un plan personalizado.
+                Reserva tu evaluación y recibe un plan dental personalizado.
               </h2>
               <p className="mx-auto mt-5 max-w-2xl text-sm leading-8 tracking-[0.02em] text-white/74 sm:text-base">
                 Coordinamos tu hora con el equipo clinico para definir objetivos, tiempos y

@@ -4,19 +4,19 @@ import RevealOnScroll from "@/Componentes/RevealOnScroll";
 
 const services = [
   {
-    name: "Diseno de sonrisa",
+    name: "Diseño de sonrisa",
     image: "/1.JPG",
   },
   {
-    name: "Armonizacion facial",
+    name: "Implantología dental",
     image: "/2.png",
   },
   {
-    name: "Estetica facial",
+    name: "Rehabilitación oral",
     image: "/3.png",
   },
   {
-    name: "limpieza dental profunda",
+    name: "Limpieza dental profunda",
     image: "/4.png",
   },
   {
@@ -36,7 +36,7 @@ export default function Seccion2() {
         <RevealOnScroll>
           <p className="text-xs uppercase tracking-[0.24em] text-white/65">Servicios</p>
           <h2 className="mt-4 max-w-3xl text-balance text-3xl font-light leading-tight tracking-[0.02em] sm:text-4xl lg:text-5xl">
-            Tratamientos disenados para realzar tu imagen con precision clinica.
+            Tratamientos diseñados para mejorar tu salud oral con precisión clínica.
           </h2>
         </RevealOnScroll>
 
@@ -65,7 +65,7 @@ export default function Seccion2() {
                 <div className="p-5">
                   <h3 className="text-lg font-light tracking-[0.02em] text-white">{service.name}</h3>
                   <p className="mt-2 text-sm leading-7 tracking-[0.02em] text-white/70">
-                    Evaluacion personalizada y plan premium para obtener resultados naturales.
+                    Evaluación personalizada y plan clínico premium para resultados funcionales y naturales.
                   </p>
                 </div>
               </Link>

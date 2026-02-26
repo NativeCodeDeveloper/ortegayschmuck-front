@@ -10,7 +10,7 @@ const navItems = [
   { label: "Servicios", href: "/#servicios" },
   { label: "Casos clinicos", href: "/#casos-clinicos" },
   { label: "Agenda", href: "/reserva-hora" },
-  { label: "Contacto", href: "/#contacto" },
+  { label: "Contacto", href: "/contacto" },
 ];
 
 export default function Navbar() {

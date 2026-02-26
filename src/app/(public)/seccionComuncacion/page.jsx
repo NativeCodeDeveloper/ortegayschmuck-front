@@ -58,11 +58,11 @@ export default function SeccionComuncacion() {
                 <section className="mt-50 px-6">
                     <div className="max-w-7xl mx-auto text-center">
                         <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight">
-                            Revisa nuestras  <span className="bg-gradient-to-r from-violet-500 to-sky-500 bg-clip-text text-transparent">promociones</span>
+                            Revisa nuestras <span className="bg-gradient-to-r from-violet-500 to-sky-500 bg-clip-text text-transparent">novedades clínicas</span>
                         </h1>
 
                         <p className="mt-4 text-gray-500 text-lg">
-                            No solo eliminamos el vello, transformamos tu relación con tu piel
+                            Mejoramos tu salud oral con tecnología y protocolos personalizados
                         </p>
 
 
@@ -85,7 +85,7 @@ export default function SeccionComuncacion() {
                     hover:shadow-[0_0_35px_rgba(99,102,241,0.7)]
                     hover:brightness-110
                     active:scale-95
-                    '>Comprar Ahora</button>
+                    '>Ver servicios</button>
                             </Link>
 
 
@@ -116,11 +116,11 @@ export default function SeccionComuncacion() {
                 <section className="mt-50 px-6">
                     <div className="max-w-7xl mx-auto text-center">
                         <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight">
-                            Revisa nuestras  <span className="bg-gradient-to-r from-violet-500 to-sky-500 bg-clip-text text-transparent">promociones</span>
+                            Revisa nuestras <span className="bg-gradient-to-r from-violet-500 to-sky-500 bg-clip-text text-transparent">novedades clínicas</span>
                         </h1>
 
                         <p className="mt-4 text-gray-500 text-lg">
-                            No solo eliminamos el vello, transformamos tu relación con tu piel
+                            Mejoramos tu salud oral con tecnología y protocolos personalizados
                         </p>
 
                         <br />
@@ -145,7 +145,7 @@ export default function SeccionComuncacion() {
                     hover:shadow-[0_0_35px_rgba(99,102,241,0.7)]
                     hover:brightness-110
                     active:scale-95
-                    '>Comprar Ahora</button>
+                    '>Ver servicios</button>
                             </Link>
 
 

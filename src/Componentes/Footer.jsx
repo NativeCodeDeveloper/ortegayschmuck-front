@@ -7,13 +7,13 @@ const footerLinks = [
   { label: "Servicios", href: "/#servicios" },
   { label: "Casos clinicos", href: "/#casos-clinicos" },
   { label: "Agenda", href: "/reserva-hora" },
-  { label: "Contacto", href: "/#contacto" },
+  { label: "Contacto", href: "/contacto" },
 ];
 
 const socialLinks = [
   {
     label: "Instagram",
-    href: "https://www.instagram.com/dr.renzotais",
+    href: "https://www.instagram.com/ortegaschmuck.cl",
     icon: Instagram,
   },
   {

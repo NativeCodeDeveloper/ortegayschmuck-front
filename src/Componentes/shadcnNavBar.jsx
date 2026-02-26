@@ -6,10 +6,10 @@ import { Menu, X } from "lucide-react";
 
 const navItems = [
   { title: "Inicio", href: "/#inicio" },
-  { title: "Especialidades", href: "/#doctor" },
-  { title: "Tecnologia", href: "/#procedimientos" },
-  { title: "Experiencia", href: "/#ultraformer" },
-  { title: "Contacto", href: "/#footer" },
+  { title: "Especialidades", href: "/#servicios" },
+  { title: "Casos clínicos", href: "/#casos-clinicos" },
+  { title: "Agenda", href: "/reserva-hora" },
+  { title: "Contacto", href: "/contacto" },
 ];
 
 export function ShadcnNavBar() {
@@ -29,7 +29,7 @@ export function ShadcnNavBar() {
               Ortega & Schmuck
             </p>
             <p className="truncate text-[11px] uppercase tracking-[0.18em] text-white/65">
-              Odontologia y medicina estetica
+              Odontología clínica integral
             </p>
           </div>
         </Link>

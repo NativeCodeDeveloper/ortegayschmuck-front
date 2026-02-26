@@ -359,14 +359,14 @@ export default function CalendarioMensualHoras() {
                     <h1
                         className={`text-3xl sm:text-4xl font-black tracking-widest `}
                     >
-                        <span className="bg-gradient-to-r from-slate-900 via-gray-800 to-slate-700 text-transparent bg-clip-text ">Dr. Renzo Tais</span>
+                        <span className="bg-gradient-to-r from-slate-900 via-gray-800 to-slate-700 text-transparent bg-clip-text ">Ortega & Schmuck</span>
                         <span
                             className="relative mt-1 block h-1 w-40 max-w-full rounded-full bg-gradient-to-r from-slate-400 via-slate-200 to-transparent"
                         />
                     </h1>
 
                     <p className="max-w-md text-sm leading-6 text-slate-500">
-                        Reserva tu hora para depilacion en segundos. Selecciona fecha y un bloque horario disponible.
+                        Reserva tu hora odontológica en segundos. Selecciona fecha y un bloque horario disponible.
                     </p>
                 </header>
 
@@ -569,7 +569,7 @@ export default function CalendarioMensualHoras() {
 
                 <footer className="mt-10 text-center text-xs text-slate-600">
                     <p>
-                        Depilación Trilaser Indolora, Tu piel suave y libre todo el año.
+                        Odontología clínica integral con atención personalizada para cada paciente.
                     </p>
                     <p className="mt-2 text-[11px] text-slate-400">
                         Horarios: Lun-Sáb 9:00-22:00 | Dom Cerrado

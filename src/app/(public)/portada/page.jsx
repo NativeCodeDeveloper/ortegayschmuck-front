@@ -11,24 +11,24 @@ const defaultHeroSlides = [
     image: "/fondo2.png",
     alt: "Clinica premium Ortega & Schmuck",
     badge: "Experiencia premium",
-    title: "Diseno clinico de alta precision.",
-    text: "Protocolos personalizados para resultados naturales en odontologia y medicina estetica.",
+    title: "Diseño clínico de alta precisión.",
+    text: "Protocolos personalizados para resultados naturales en odontología integral.",
   },
   {
     id: "hero-2",
     image: "/fondo3.png",
     alt: "Paciente en evaluacion estetica",
     badge: "Tecnologia avanzada",
-    title: "Resultados elegantes y medibles.",
-    text: "Analisis integral, plan por etapas y acompanamiento continuo en cada tratamiento.",
+    title: "Resultados funcionales y estéticos.",
+    text: "Análisis integral, plan por etapas y acompañamiento continuo en cada tratamiento.",
   },
   {
     id: "hero-3",
     image: "/fondo1.png",
     alt: "Equipo clinico especializado",
     badge: "Atencion personalizada",
-    title: "Tu armonia facial y dental en un solo lugar.",
-    text: "Integramos criterio medico y estetico para lograr una experiencia moderna y segura.",
+    title: "Tu salud oral en un solo lugar.",
+    text: "Integramos criterio clínico y estética dental para una experiencia moderna y segura.",
   },
 ];
 
@@ -120,7 +120,7 @@ export default function Portada({ slides = defaultHeroSlides }) {
                         {slide.badge}
                       </p>
                       <h1 className="mt-4 text-balance text-4xl font-light leading-tight tracking-[0.02em] text-white sm:text-5xl lg:text-6xl">
-                        Medicina y odontologia estetica
+                        Odontología clínica integral
                       </h1>
                       <h2 className="mt-4 text-balance text-2xl font-light leading-tight tracking-[0.02em] text-white/95 sm:text-3xl lg:text-4xl">
                         {slide.title}

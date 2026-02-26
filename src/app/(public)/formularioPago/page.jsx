@@ -21,37 +21,37 @@ const TERMINOS_Y_CONDICIONES_TEXTO = `Santiago de chile 2025
 Términos y condiciones. 
 Generalidades 
 Este documento regula los términos y condiciones bajo los cuales Ud. tiene derecho a 
-acceder y usar los servicios del sitio Web www.siluetachic.cl y de cualquier información, 
+acceder y usar los servicios del sitio Web www.ortegaschmuck.cl y de cualquier información, 
 texto, video u otro material comunicado en el sitio web.  
 En este sitio Web podrá usar, sin costo, el software y las aplicaciones para equipos móviles 
 que le permitan navegar, visitar, comparar y si lo desea, adquirir los bienes o servicios que 
 se exhiben aquí. Le recomendamos que lea detenidamente estas Condiciones e imprima o 
 guarde una copia de las mismas en la unidad de disco local para su información.  
 Estos Términos y Condiciones serán aplicados y se entenderán incorporados en cada uno 
-de los contratos que celebre con Silueta Chic. por medio de este sitio web. El uso de este 
+de los contratos que celebre con Ortega & Schmuck. por medio de este sitio web. El uso de este 
 sitio web, la aplicación de estos Términos y Condiciones, los actos que ejecute  y los 
 contratos que celebre por medio de este sitio web, se encuentran sujetos y sometidos a las 
 leyes de la República de Chile y en especial a la ley 19.496 de protección de los derechos 
-de los consumidores. Silueta Chic, por lo tanto, aplicará estrictamente todos los beneficios, 
+de los consumidores. Ortega & Schmuck, por lo tanto, aplicará estrictamente todos los beneficios, 
 garantías y derechos reconocidos en favor de los consumidores en la ley 19.496. Además, 
-Silueta Chic adhiere en todas sus partes al Código de Buenas Prácticas para el Comercio 
+Ortega & Schmuck adhiere en todas sus partes al Código de Buenas Prácticas para el Comercio 
 Electrónico de la Cámara de Comercio de Santiago. 
 Comunicaciones  
 Para la comunicación de cualquier presentación, consulta o reclamo a propósito del uso de 
-este sitio, o los contratos que en él o se lleven a cabo, Silueta Chic designa como 
+este sitio, o los contratos que en él o se lleven a cabo, Ortega & Schmuck designa como 
 representantes legales a Directorio y Gerente General. Los representantes son: Constanza 
 Viviana Vargas Espinoza y Camila Belén Téllez Arias, disponible en el correo 
-silueta.chic2000@gmail.com; y en el teléfono de Servicio al Cliente +56 9 77173029, 
+contacto@ortegaschmuck.cl; y en el teléfono de Servicio al Cliente +56 9 77173029, 
 domiciliado para estos efectos en Avenida Irarrázaval 1989, oficina 204 placa sur, comuna 
 de Ñuñoa, ciudad de Santiago. 
-Si una persona no desea seguir recibiendo publicidad o promociones de Silueta Chic por 
+Si una persona no desea seguir recibiendo publicidad o promociones de Ortega & Schmuck por 
 correo electrónico u otros medios equivalentes, podrá solicitarlo en cualquier momento, 
-según se indica en cada envío. Silueta Chic cesará el envío a quien lo solicite.
+según se indica en cada envío. Ortega & Schmuck cesará el envío a quien lo solicite.
 
 Libertad de navegación y aceptación
 La mera visita de este sitio web, en el cual se ofrecen determinados bienes y el acceso a 
 determinados servicios, no impone al consumidor obligación alguna, a menos que haya 
-aceptado en forma inequívoca las condiciones ofrecidas por Silueta Chic, en la forma 
+aceptado en forma inequívoca las condiciones ofrecidas por Ortega & Schmuck, en la forma 
 indicada en estos Términos y Condiciones.  
 Para aceptar estos Términos y Condiciones, el usuario deberá hacer clic donde el sitio web 
 ofrezca esta opción en la frase “he leído y aceptado” o similar.
@@ -84,7 +84,7 @@ nacionales, que se encuentren afiliadas a Transbank.
 - Efectivo en oficina.
 - Transferencia bancaria (datos por correo/WhatsApp).
 Los portales de pago pertenecen a terceros, por lo que su continuidad y correcto 
-funcionamiento no es responsabilidad de Silueta Chic.
+funcionamiento no es responsabilidad de Ortega & Schmuck.
 
 Derechos y garantías
 Condición esencial: No se admiten cambios ni devoluciones si el cliente ya inició alguna 
@@ -97,7 +97,7 @@ si no, puede extenderse hasta 90 días).
 Ventas presenciales: Hasta 10 días corridos: devolución 100%. Después de 10 días: reembolso 
 70% (retención 30% por gastos administrativos permitidos).
 
-Solicitudes: Deben enviarse a silueta.chic2000@gmail.com, presentando boleta u otro 
+Solicitudes: Deben enviarse a contacto@ortegaschmuck.cl, presentando boleta u otro 
 comprobante. El valor por reserva de box no es reembolsable salvo aviso con al menos 24 
 horas.
 
@@ -105,19 +105,19 @@ Incompatibilidad: Si en la evaluación inicial se determina que el tratamiento e
 inapropiado, se cancela la venta y se reembolsa el total pagado.
 
 Realización del servicio
-La compra se realiza en línea y el tratamiento se efectúa presencialmente en Silueta Chic. 
+La compra se realiza en línea y el tratamiento se efectúa presencialmente en Ortega & Schmuck. 
 Evaluación previa obligatoria antes de comenzar. Agendamiento dentro del horario de 
 atención.
 
 Resultados esperados y efectos adversos
-Los resultados varían según factores individuales. La depilación láser conlleva riesgos; Silueta 
-Chic no se responsabiliza por efectos adversos derivados de datos erróneos u omisiones en la 
+Los resultados varían según factores individuales. Todo tratamiento odontológico conlleva riesgos; Ortega & Schmuck 
+no se responsabiliza por efectos adversos derivados de datos erróneos u omisiones en la 
 declaración de salud, o por no seguir cuidados previos/posteriores.
 
 Opciones, vigencia y evaluación
 Se pueden adquirir sesiones por zonas, paquetes (3 o 6) y combos. Vigencia de tratamientos: 
 12 meses desde la compra; sesiones no usadas caducan. Evaluación inicial presencial u online 
-con cuestionario de salud. Silueta Chic puede suspender el servicio si detecta contraindicación, 
+con cuestionario de salud. Ortega & Schmuck puede suspender el servicio si detecta contraindicación, 
 reembolsando las sesiones no realizadas.
 
 Consentimiento, reservas y confirmaciones
@@ -131,7 +131,7 @@ Se podrán enviar recordatorios y confirmaciones por correo, SMS, WhatsApp y lla
 cliente autoriza expresamente estas notificaciones.
 
 Responsabilidad
-Silueta Chic no responde por uso indebido del sitio, interrupciones, errores técnicos, contenidos 
+Ortega & Schmuck no responde por uso indebido del sitio, interrupciones, errores técnicos, contenidos 
 de sitios externos, ni por virus en equipos del usuario. La responsabilidad total no excederá el 
 precio efectivamente pagado, sin perjuicio de lo que determinen los tribunales.
 
@@ -146,12 +146,12 @@ electrónicos y el aviso de publicación por email, conforme a normativa del SII
 obliga a imprimir y conservar según requisitos.
 
 Propiedad intelectual
-Los contenidos del sitio (textos, imágenes, códigos, marcas, etc.) son propiedad de Silueta Chic 
+Los contenidos del sitio (textos, imágenes, códigos, marcas, etc.) son propiedad de Ortega & Schmuck 
 o de sus proveedores y están protegidos por leyes aplicables. Se prohíbe el uso no autorizado.
 
 Legislación aplicable y competencia
 Los presentes términos y condiciones se rigen por las leyes de la República de Chile. Cualquier 
-controversia o conflicto derivado de la utilización del sitio web de Silueta Chic, sus Términos y 
+controversia o conflicto derivado de la utilización del sitio web de Ortega & Schmuck, sus Términos y 
 Condiciones y las Políticas de Privacidad, su validez, interpretación, alcance o cumplimiento, 
 será sometida a las leyes aplicables de la República de Chile.`;
 

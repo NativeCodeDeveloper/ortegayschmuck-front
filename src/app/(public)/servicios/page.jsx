@@ -3,21 +3,18 @@
 import Link from "next/link";
 
 const servicios = [
-  "Lifting facial no quirúrgico con Ultraformer MPT",
-  "Reducción de papada",
-  "Definición mandibular",
-  "Armonización facial",
-  "Rinomodelación",
-  "Relleno de labios",
-  "Tratamiento con toxina botulínica (Dysport)",
-  "Láser CO₂",
-  "Blefaroplastia no quirúrgica",
-  "Emsculpt Neo",
-  "Bioestimulación facial y corporal",
-  "Polinucleótidos de salmón",
-  "Exosomas",
-  "Tratamientos corporales",
-  "Armonización genital masculina y femenina",
+  "Evaluación odontológica integral",
+  "Diagnóstico digital y planificación clínica",
+  "Limpieza dental profunda",
+  "Blanqueamiento dental clínico",
+  "Diseño de sonrisa",
+  "Carillas dentales",
+  "Rehabilitación oral",
+  "Implantología dental",
+  "Endodoncia",
+  "Periodoncia",
+  "Odontopediatría",
+  "Urgencias odontológicas",
 ];
 
 export default function ServicioPage() {
@@ -28,12 +25,11 @@ export default function ServicioPage() {
           Servicios
         </p>
         <h1 className="mt-5 max-w-4xl text-4xl leading-tight sm:text-5xl">
-          Medicina estética premium con evaluación médica personalizada.
+          Odontología clínica premium con evaluación personalizada.
         </h1>
         <p className="mt-7 max-w-3xl text-base leading-relaxed text-slate-600">
-          Dr. Renzo Tais, Médico Cirujano, especialista en Medicina Estética (Universidad
-          de Buenos Aires) y especialista en Nefrología. Atención en Providencia, Santiago
-          de Chile.
+          En Ortega & Schmuck diseñamos planes de tratamiento odontológico según el
+          diagnóstico clínico de cada paciente, priorizando salud oral, función y estética.
         </p>
       </section>
 
@@ -48,21 +44,21 @@ export default function ServicioPage() {
             </p>
             <h2 className="mt-4 text-xl leading-snug text-slate-900">{servicio}</h2>
             <p className="mt-5 text-sm leading-relaxed text-slate-600">
-              Planificación individual y seguimiento clínico para mantener resultados
-              armónicos y seguros.
+              Planificación individual y seguimiento clínico para resultados seguros,
+              funcionales y estables en el tiempo.
             </p>
           </article>
         ))}
       </section>
 
       <section className="border-t border-slate-200 bg-white">
-        <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-8 px-6 py-16 md:py-20 md:flex-row md:items-center md:px-10 xl:px-12">
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-8 px-6 py-16 md:flex-row md:items-center md:px-10 md:py-20 xl:px-12">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
               Siguiente paso
             </p>
             <h3 className="mt-4 text-3xl leading-tight text-slate-900">
-              Agenda una evaluación personalizada con el Dr. Renzo Tais.
+              Agenda una evaluación odontológica personalizada.
             </h3>
           </div>
           <div className="flex flex-wrap gap-3">

@@ -69,7 +69,7 @@ export default function NavbarDashboard() {
                 }
               }}
             >
-                Silueta Chic
+                Ortega & Schmuck
             </Typography>
           </Box>
 

@@ -12,21 +12,18 @@ export default function MisionVisionPage() {
         <div className="relative mx-auto grid w-full max-w-7xl gap-12 px-6 md:px-10 lg:grid-cols-[1.1fr_1fr] lg:items-center xl:px-12 xl:gap-16">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-              Dr. Renzo Tais
+              Ortega & Schmuck
             </p>
             <h1 className="mt-5 text-4xl leading-tight sm:text-5xl">Misión y Visión</h1>
             <p className="mt-7 text-justify text-sm leading-relaxed text-slate-600 sm:text-base">
-              Nuestra misión es brindar conocimientos y tratamientos de medicina estética de
-              manera personalizada y de alta calidad, logrando mejorar la apariencia y el
-              bienestar de las personas, utilizando tecnologías y procedimientos avanzados,
-              en un entorno seguro, confiable y acogedor. Así, mi compromiso es brindar
-              siempre resultados naturales que realcen la belleza individual de cada
-              paciente, mejorando la autoestima y el cuidado integral de las personas.
+              Nuestra misión es entregar atención odontológica integral, personalizada y de
+              alta calidad, combinando diagnóstico clínico, tecnología avanzada y protocolos
+              seguros para mejorar la salud oral y la calidad de vida de cada paciente.
             </p>
-            <p className="mt-5  text-justify max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
-              Médico Cirujano, especialista en Medicina Estética (Universidad de Buenos
-              Aires) y especialista en Nefrología. Atención en Providencia, Santiago de
-              Chile.
+            <p className="mt-5 max-w-2xl text-justify text-sm leading-relaxed text-slate-600 sm:text-base">
+              Nuestra visión es consolidarnos como una clínica dental referente en
+              Providencia y Santiago por la excelencia clínica, la cercanía en la atención
+              y los resultados funcionales y estéticos obtenidos en cada tratamiento.
             </p>
 
             <Link
@@ -40,7 +37,7 @@ export default function MisionVisionPage() {
           <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border border-white/70 bg-slate-100 shadow-[0_24px_70px_-38px_rgba(15,23,42,0.5)]">
             <Image
               src="/dr2.png"
-              alt="Misión y visión"
+              alt="Misión y visión clínica"
               fill
               className="object-cover object-center"
             />
