@@ -5,27 +5,27 @@ import RevealOnScroll from "@/Componentes/RevealOnScroll";
 const services = [
   {
     name: "Diseno de sonrisa",
-    image: "/foto6.avif",
+    image: "/1.JPG",
   },
   {
     name: "Armonizacion facial",
-    image: "/foto1.avif",
+    image: "/2.png",
   },
   {
-    name: "Ultraformer",
-    image: "/ultraformer.avif",
+    name: "Estetica facial",
+    image: "/3.png",
   },
   {
-    name: "Estetica corporal",
-    image: "/esteticacorporal.avif",
+    name: "limpieza dental profunda",
+    image: "/4.png",
   },
   {
-    name: "Rinomodelacion",
-    image: "/rinoplastia.png",
+    name: "Blanqueamiento dental",
+    image: "/5.png",
   },
   {
-    name: "Rejuvenecimiento integral",
-    image: "/prueba4.webp",
+    name: "Carillas dentales",
+    image: "/6.png",
   },
 ];
 

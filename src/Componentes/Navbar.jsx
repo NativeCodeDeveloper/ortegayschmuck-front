@@ -17,12 +17,12 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[linear-gradient(180deg,rgba(116,120,127,0.42)_0%,rgba(41,43,47,0.58)_45%,rgba(4,4,5,0.76)_100%)] backdrop-blur-2xl">
+    <header className="fixed inset-x-0 top-0 z-50 bg-[linear-gradient(180deg,rgba(116,120,127,0.42)_0%,rgba(41,43,47,0.58)_45%,rgba(4,4,5,0.76)_100%)] backdrop-blur-2xl">
       <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-5 md:h-24 md:px-8 lg:px-10">
         <Link href="/#inicio" aria-label="Ir al inicio" className="group flex items-center gap-3">
           <div className="relative h-14 w-14 sm:h-20 sm:w-20">
             <Image
-              src="/logoortega.png"
+              src="/logodifort.png"
               alt="Ortega & Schmuck"
               fill
               priority
@@ -31,10 +31,10 @@ export default function Navbar() {
             />
           </div>
           <div className="min-w-0">
-            <p className="truncate text-xs font-medium uppercase tracking-[0.28em] text-white sm:text-sm">
+            <p className="truncate text-ml font-medium uppercase tracking-[0.28em] text-white sm:text-m">
               Ortega & Schmuck
             </p>
-            <p className="truncate text-[10px] uppercase tracking-[0.2em] text-white/65 sm:text-[11px]">
+            <p className="truncate text-[8px] uppercase tracking-[0.2em] text-white/65 sm:text-[9px]">
               Odontología y Medicina Estética.
             </p>
           </div>

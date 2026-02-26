@@ -1,26 +1,26 @@
-import { Cpu, ShieldCheck, Sparkles, UserRound } from "lucide-react";
+import { Braces, HeartPulse, ScanLine, Stethoscope } from "lucide-react";
 import RevealOnScroll from "@/Componentes/RevealOnScroll";
 
 const pillars = [
   {
     title: "Tecnologia avanzada",
     text: "Equipamiento de ultima generacion para diagnosticos claros y decisiones de alta precision.",
-    icon: Cpu,
+    icon: ScanLine,
   },
   {
     title: "Profesionales especializados",
     text: "Equipo clinico con formacion continua para ofrecer protocolos seguros y actualizados.",
-    icon: ShieldCheck,
+    icon: Stethoscope,
   },
   {
     title: "Enfoque estetico premium",
     text: "Buscamos armonia y naturalidad con una planificacion individual en cada paciente.",
-    icon: Sparkles,
+    icon: Braces,
   },
   {
     title: "Atencion personalizada",
     text: "Acompanamiento cercano antes, durante y despues del tratamiento.",
-    icon: UserRound,
+    icon: HeartPulse,
   },
 ];
 

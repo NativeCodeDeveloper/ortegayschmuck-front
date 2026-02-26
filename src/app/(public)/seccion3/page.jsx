@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Instagram, MapPin, MessageCircle } from "lucide-react";
@@ -10,22 +10,22 @@ const clinicalCases = [
   {
     title: "Armonizacion de sonrisa",
     description: "Mejora de proporciones dentales y faciales con un protocolo conservador.",
-    image: "/cportada1.png",
+    image: "/7.png",
   },
   {
     title: "Definicion mandibular",
     description: "Plan de armonizacion facial para lograr un perfil elegante y natural.",
-    image: "/cportada2.png",
+    image: "/8.png",
   },
   {
     title: "Rejuvenecimiento no invasivo",
     description: "Tratamiento progresivo para firmeza y luminosidad sin perder identidad.",
-    image: "/cportada3.png",
+    image: "/12.png",
   },
   {
     title: "Contorno facial integral",
     description: "Enfoque combinado para equilibrar volumen, textura y estructura.",
-    image: "/prueba3.jpeg",
+    image: "/10.png",
   },
 ];
 
@@ -47,14 +47,21 @@ const socialLinks = [
   },
 ];
 
+const FALLBACK_CASE_IMAGE = "/ac3.png";
+
 export default function Seccion3() {
   const scrollerRef = useRef(null);
+  const [imageErrors, setImageErrors] = useState({});
 
   const scrollByAmount = (direction) => {
     const container = scrollerRef.current;
     if (!container) return;
 
-    const amount = Math.round(container.clientWidth * 0.82);
+    const firstCardWidth = container.firstElementChild?.clientWidth ?? 0;
+    const styles = window.getComputedStyle(container);
+    const gap = parseFloat(styles.columnGap || styles.gap || "0");
+    const amount =
+      firstCardWidth > 0 ? Math.round(firstCardWidth + gap) : Math.round(container.clientWidth * 0.82);
     const nextLeft = direction === "left" ? -amount : amount;
 
     container.scrollBy({ left: nextLeft, behavior: "smooth" });
@@ -104,24 +111,32 @@ export default function Seccion3() {
             {clinicalCases.map((item, index) => (
               <RevealOnScroll
                 key={item.title}
-                className="min-w-[82%] shrink-0 snap-start sm:min-w-[48%] lg:min-w-[31%]"
+                className="w-[82%] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]"
                 delayClass={index === 0 ? "delay-100" : "delay-150"}
               >
-                <article className="h-full overflow-hidden rounded-3xl border border-white/10 bg-[#111]">
+                <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#111]">
                   <div className="relative aspect-[4/5] overflow-hidden">
                     <Image
-                      src={item.image}
+                      src={imageErrors[item.image] ? FALLBACK_CASE_IMAGE : item.image}
                       alt={item.title}
                       fill
                       loading="lazy"
                       sizes="(max-width: 640px) 82vw, (max-width: 1024px) 48vw, 31vw"
                       className="object-cover"
+                      onError={() =>
+                        setImageErrors((current) => ({
+                          ...current,
+                          [item.image]: true,
+                        }))
+                      }
                     />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,0,0,0.74)_100%)]" />
                   </div>
-                  <div className="p-5">
-                    <h3 className="text-xl font-light tracking-[0.02em] text-white">{item.title}</h3>
-                    <p className="mt-3 text-sm leading-7 tracking-[0.02em] text-white/72">
+                  <div className="flex min-h-[176px] flex-col p-5 sm:p-6">
+                    <h3 className="h-[3.5rem] overflow-hidden text-xl font-light leading-7 tracking-[0.02em] text-white">
+                      {item.title}
+                    </h3>
+                    <p className="mt-3 h-[5.25rem] overflow-hidden text-sm leading-7 tracking-[0.02em] text-white/72">
                       {item.description}
                     </p>
                   </div>
@@ -153,58 +168,6 @@ export default function Seccion3() {
               </Link>
             </div>
           </RevealOnScroll>
-        </div>
-      </section>
-
-      <section id="contacto" className="scroll-mt-24 bg-black py-20 text-white sm:py-24">
-        <div className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-10">
-          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-            <RevealOnScroll>
-              <article className="h-full rounded-[2rem] border border-white/10 bg-[#0f0f10] p-7 sm:p-8">
-                <p className="text-xs uppercase tracking-[0.24em] text-white/62">Contacto</p>
-                <h2 className="mt-4 text-balance text-3xl font-light leading-tight tracking-[0.02em] sm:text-4xl">
-                  Ubicacion y canales directos para ayudarte rapido.
-                </h2>
-                <p className="mt-5 max-w-md text-sm leading-8 tracking-[0.02em] text-white/74 sm:text-base">
-                  Estamos en Providencia, Santiago de Chile. Escribenos por WhatsApp o
-                  Instagram y te ayudamos a coordinar tu hora.
-                </p>
-
-                <div className="mt-8 flex flex-wrap gap-3">
-                  {socialLinks.map((item) => {
-                    const Icon = item.icon;
-
-                    return (
-                      <a
-                        key={item.label}
-                        href={item.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={item.label}
-                        className="inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-white/5 text-white transition duration-300 ease-out hover:scale-105 hover:bg-white/18"
-                      >
-                        <Icon className="h-7 w-7" />
-                      </a>
-                    );
-                  })}
-                </div>
-              </article>
-            </RevealOnScroll>
-
-            <RevealOnScroll delayClass="delay-150">
-              <article className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#0f0f10] p-2">
-                <div className="overflow-hidden rounded-[1.4rem] border border-white/10">
-                  <iframe
-                    title="Mapa de ubicacion Ortega & Schmuck"
-                    src="https://www.google.com/maps?q=Providencia%2C%20Santiago%2C%20Chile&output=embed"
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    className="h-[380px] w-full md:h-[460px]"
-                  />
-                </div>
-              </article>
-            </RevealOnScroll>
-          </div>
         </div>
       </section>
     </>

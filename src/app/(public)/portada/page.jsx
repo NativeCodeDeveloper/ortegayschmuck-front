@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const defaultHeroSlides = [
   {
     id: "hero-1",
-    image: "/portada1.png",
+    image: "/fondo2.png",
     alt: "Clinica premium Ortega & Schmuck",
     badge: "Experiencia premium",
     title: "Diseno clinico de alta precision.",
@@ -16,7 +16,7 @@ const defaultHeroSlides = [
   },
   {
     id: "hero-2",
-    image: "/portada2.png",
+    image: "/fondo3.png",
     alt: "Paciente en evaluacion estetica",
     badge: "Tecnologia avanzada",
     title: "Resultados elegantes y medibles.",
@@ -24,7 +24,7 @@ const defaultHeroSlides = [
   },
   {
     id: "hero-3",
-    image: "/portada3.png",
+    image: "/fondo1.png",
     alt: "Equipo clinico especializado",
     badge: "Atencion personalizada",
     title: "Tu armonia facial y dental en un solo lugar.",
@@ -86,10 +86,10 @@ export default function Portada({ slides = defaultHeroSlides }) {
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_12%,rgba(133,139,149,0.2),transparent_40%),radial-gradient(circle_at_90%_0%,rgba(255,255,255,0.08),transparent_35%)]" />
 
-      <div className="relative mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-7xl items-center px-5 py-10 sm:py-14 md:min-h-[calc(100vh-6rem)] md:px-8 lg:px-10">
+      <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-none items-start px-2 pt-3 pb-4 sm:pt-5 sm:pb-8 md:min-h-[calc(100vh-6rem)] md:px-8 md:pt-7 lg:px-10">
         <div className="relative w-full overflow-hidden rounded-[2rem] border border-white/15 bg-zinc-900/40 shadow-[0_34px_90px_-56px_rgba(0,0,0,0.95)]">
           <div
-            className="relative min-h-[600px]"
+            className="relative min-h-[76vh] sm:min-h-[82vh]"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
@@ -129,7 +129,7 @@ export default function Portada({ slides = defaultHeroSlides }) {
                         {slide.text}
                       </p>
 
-                      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                      <div className="mt-8 mb-3.5 flex flex-col gap-3 sm:flex-row sm:items-center">
                         <Link
                           href="/reserva-hora"
                           aria-label="Agendar hora"

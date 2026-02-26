@@ -73,11 +73,6 @@ export const metadata = {
     description:
       "Odontologia y medicina estetica premium con protocolos personalizados.",
   },
-  icons: {
-    icon: "/silueta.ico",
-    shortcut: "/silueta.ico",
-    apple: "/silueta.ico",
-  },
 };
 
 export default function RootLayout({ children }) {
