@@ -18,7 +18,7 @@ export default function Navbar() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-[linear-gradient(180deg,rgba(116,120,127,0.42)_0%,rgba(41,43,47,0.58)_45%,rgba(4,4,5,0.76)_100%)] backdrop-blur-2xl">
-      <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-5 md:h-24 md:px-8 lg:px-10">
+      <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-5 md:h-24 md:px-8 lg:px-0">
         <Link href="/#inicio" aria-label="Ir al inicio" className="group flex items-center gap-3">
           <div className="relative h-14 w-14 sm:h-20 sm:w-20">
             <Image
@@ -41,7 +41,7 @@ export default function Navbar() {
         </Link>
 
         <nav aria-label="Menu principal" className="hidden lg:block">
-          <ul className="flex items-center gap-7">
+          <ul className="flex items-center gap-12">
             {navItems.map((item) => (
               <li key={item.label}>
                 <Link
