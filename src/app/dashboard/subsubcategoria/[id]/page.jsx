@@ -289,9 +289,14 @@ export default function SubSubCategoria(){
             return;
         }
 
-        // Si ya viene como URL (ej: desde BD / Cloudflare), úsala directamente
+        // Si ya viene como string (ID de Cloudflare o URL), construimos la URL completa
         if (typeof imagenReferencial === "string") {
-            setprevizualizacion(imagenReferencial);
+            const esUrl = imagenReferencial.startsWith("http");
+            setprevizualizacion(
+                esUrl
+                    ? imagenReferencial
+                    : `https://imagedelivery.net/aCBUhLfqUcxA2yhIBn1fNQ/${imagenReferencial}/card`
+            );
             return;
         }
 
@@ -422,42 +427,42 @@ export default function SubSubCategoria(){
 
                             {/* Imagen */}
                             <div className="space-y-2">
-                              <label className="text-sm font-medium text-slate-700">Imagen referencial</label>
-                              <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-100">
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  className="block w-full text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-200"
-                                  onChange={(e) => {
-                                    const archivo = e.target.files?.[0];
-                                    if (!archivo) {
-                                      return;
-                                    }
-                                    setImagenReferencial(archivo);
-                                  }}
-                                />
-                              </div>
-                              <p className="text-xs leading-relaxed text-slate-500">
-                                Selecciona una imagen de referencia para las sub-categorías que se mostrarán en el catálogo principal.
-                              </p>
+                                <label className="text-sm font-medium text-slate-700">Imagen referencial</label>
+                                <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-100">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="block w-full text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-200"
+                                        onChange={(e) => {
+                                            const archivo = e.target.files?.[0];
+                                            if (!archivo) {
+                                                return;
+                                            }
+                                            setImagenReferencial(archivo);
+                                        }}
+                                    />
+                                </div>
+                                <p className="text-xs leading-relaxed text-slate-500">
+                                    Selecciona una imagen de referencia para las sub-categorías que se mostrarán en el catálogo principal.
+                                </p>
                             </div>
 
                             {/* Preview */}
                             <div className="space-y-2">
-                              <label className="text-sm font-medium text-slate-700">Previsualización</label>
-                              <div className="flex h-44 w-full items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm">
-                                {previzualizacion ? (
-                                  <img
-                                    src={previzualizacion}
-                                    alt="Previsualización"
-                                    className="h-full w-full object-cover"
-                                  />
-                                ) : (
-                                  <p className="px-4 text-center text-sm text-slate-500">
-                                    No hay imagen seleccionada
-                                  </p>
-                                )}
-                              </div>
+                                <label className="text-sm font-medium text-slate-700">Previsualización</label>
+                                <div className="flex h-44 w-full items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm">
+                                    {previzualizacion ? (
+                                        <img
+                                            src={previzualizacion}
+                                            alt="Previsualización"
+                                            className="h-full w-full object-cover"
+                                        />
+                                    ) : (
+                                        <p className="px-4 text-center text-sm text-slate-500">
+                                            No hay imagen seleccionada
+                                        </p>
+                                    )}
+                                </div>
                             </div>
 
                         </div>
@@ -471,7 +476,7 @@ export default function SubSubCategoria(){
                                     <ShadcnButton
                                         nombre={'Ingresar Sub-Subcategoría'}
 
-                                    funcion={()=> insertarSubCategoriaConImagen(nombreSubSubCategoria,imagenReferencial, id)}
+                                        funcion={()=> insertarSubCategoriaConImagen(nombreSubSubCategoria,imagenReferencial, id)}
 
                                         className="w-full"
                                     />
@@ -535,9 +540,9 @@ export default function SubSubCategoria(){
 
                                             <TableCell className="font-medium text-slate-900">
                                                 <img
-                                                src={`https://imagedelivery.net/aCBUhLfqUcxA2yhIBn1fNQ/${subsubcategoria.imagenReferencial}/mini`}
-                                                alt='miniatura'
-                                                className='h-20 w-20 object-cover rounded-lg'
+                                                    src={`https://imagedelivery.net/aCBUhLfqUcxA2yhIBn1fNQ/${subsubcategoria.imagenReferencial}/mini`}
+                                                    alt='miniatura'
+                                                    className='h-20 w-20 object-cover rounded-lg'
                                                 />
                                             </TableCell>
 

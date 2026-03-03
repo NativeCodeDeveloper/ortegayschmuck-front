@@ -13,8 +13,8 @@ import ToasterClient from "@/Componentes/ToasterClient";
 import {toast} from "react-hot-toast";
 import {ButtonDinamic} from "@/Componentes/ButtonDinamic";
 
-//import jsPDF from "jspdf";
-//import autoTable from "jspdf-autotable";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {SelectDinamic} from "@/Componentes/SelectDinamic";
 import {InputTextDinamic} from "@/Componentes/InputTextDinamic";
 
@@ -85,105 +85,194 @@ export default function PresupuestoTratamiento() {
 
 
     async function descargarPresupuestoPDF() {
-        // 1. Crear el documento PDF (orientacion vertical, unidad mm, tamaño carta)
         const doc = new jsPDF("p", "mm", "letter");
+        const pageW = doc.internal.pageSize.getWidth();
+        const margin = 18;
+        const rightX = pageW - margin;
 
-        // 2. Cargar fuente Michroma
-        const fontRes = await fetch("/fonts/Michroma-Regular.ttf");
-        const fontBuffer = await fontRes.arrayBuffer();
-        const fontBytes = new Uint8Array(fontBuffer);
-        let binary = "";
-        for (let i = 0; i < fontBytes.length; i++) {
-            binary += String.fromCharCode(fontBytes[i]);
-        }
-        const fontBase64 = btoa(binary);
-        doc.addFileToVFS("Michroma-Regular.ttf", fontBase64);
-        doc.addFont("Michroma-Regular.ttf", "Michroma", "normal");
+        // Cargar fuente Michroma
+        try {
+            const fontRes = await fetch("/fonts/Michroma-Regular.ttf");
+            const fontBuffer = await fontRes.arrayBuffer();
+            const fontBytes = new Uint8Array(fontBuffer);
+            let binary = "";
+            for (let i = 0; i < fontBytes.length; i++) binary += String.fromCharCode(fontBytes[i]);
+            doc.addFileToVFS("Michroma-Regular.ttf", btoa(binary));
+            doc.addFont("Michroma-Regular.ttf", "Michroma", "normal");
+        } catch (e) { /* fallback a helvetica */ }
 
-        // 3. Titulo de la plataforma con Michroma
-        doc.setFont("Michroma", "normal");
-        doc.setFontSize(22);
-        doc.setTextColor(2, 132, 199); // sky-600
-        doc.text("AgendaClinica", 14, 18);
+        // ── Header con franja oscura ──
+        const empresaNombre = process.env.NEXT_PUBLIC_EMPRESA_NOMBRE || "Ortega & Schmuck";
+        doc.setFillColor(15, 23, 42); // slate-900
+        doc.rect(0, 0, pageW, 42, "F");
 
-        // 4. Subtitulo de la plataforma (tambien Michroma)
-        doc.setFontSize(9);
+        // Línea dorada decorativa
+        doc.setDrawColor(212, 175, 55);
+        doc.setLineWidth(0.6);
+        doc.line(margin, 42, rightX, 42);
+
+        // Nombre empresa
+        try { doc.setFont("Michroma", "normal"); } catch (e) { doc.setFont("helvetica", "bold"); }
+        doc.setFontSize(14);
+        doc.setTextColor(255, 255, 255);
+        doc.text(empresaNombre, margin, 14);
+
+        // Título sistema
+        doc.setFontSize(18);
+        doc.setTextColor(255, 255, 255);
+        doc.text("AgendaClinica", margin, 24);
+
+        // Subtítulo
+        doc.setFontSize(7);
         doc.setTextColor(148, 163, 184); // slate-400
-        doc.text("Healthcare Information System", 14, 24);
+        doc.text("Healthcare Information System", margin, 30);
 
-        // Volver a fuente default para el resto del documento
+        // Fecha alineada a la derecha en el header
         doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text(new Date().toLocaleDateString("es-CL", {day: "2-digit", month: "long", year: "numeric"}), rightX, 20, {align: "right"});
 
-        // 4. Linea separadora
-        doc.setDrawColor(226, 232, 240); // slate-200
-        doc.setLineWidth(0.5);
-        doc.line(14, 27, 200, 27);
+        // Tipo de documento
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8);
+        doc.setTextColor(212, 175, 55); // dorado
+        doc.text("PRESUPUESTO DE TRATAMIENTO", rightX, 28, {align: "right"});
 
-        // 5. Titulo del documento
-        doc.setFontSize(16);
-        doc.setTextColor(30, 41, 59); // slate-800
-        doc.text("Presupuesto de Tratamiento", 14, 35);
-
-        // 6. Fecha
-        doc.setFontSize(10);
-        doc.setTextColor(100, 116, 139); // slate-500
-        doc.text(`Fecha: ${new Date().toLocaleDateString("es-CL")}`, 14, 42);
-
-        // 7. Datos del profesional y paciente
+        // ── Datos del presupuesto ──
+        let y = 52;
         const profesionalLabel = listaProfesionales.find(p => String(p.id_profesional) === String(nombreProfesional));
-        doc.setFontSize(10);
-        doc.setTextColor(30, 41, 59);
-        doc.text(`Profesional: ${profesionalLabel?.nombreProfesional || "-"}`, 14, 50);
-        doc.text(`Paciente: ${nombrePaciente || "-"}`, 14, 56);
-        doc.text(`RUT / DNI: ${rutaPaciente || "-"}`, 14, 62);
 
-        // 8. Armar los datos de la tabla
-        const columns = ["Servicio", "Valor"];
-        const rows = listaPresupuesto.map(servicio => [
+        // Fondo sutil para sección datos
+        doc.setFillColor(248, 250, 252); // slate-50
+        doc.roundedRect(margin, y - 5, rightX - margin, 28, 2, 2, "F");
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(7);
+        doc.setTextColor(100, 116, 139); // slate-500
+        doc.text("PROFESIONAL", margin + 5, y);
+        doc.text("PACIENTE", margin + 80, y);
+        doc.text("RUT / DNI", margin + 80, y + 12);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(30, 41, 59); // slate-800
+        doc.text(profesionalLabel?.nombreProfesional || "-", margin + 5, y + 6);
+        doc.text(nombrePaciente || "-", margin + 80, y + 6);
+
+        doc.setFontSize(10);
+        doc.text(rutaPaciente || "-", margin + 80, y + 18);
+
+        // ── Tabla de servicios ──
+        y = 86;
+
+        const columns = ["#", "Servicio / Procedimiento", "Valor"];
+        const rows = listaPresupuesto.map((servicio, i) => [
+            String(i + 1),
             servicio.tituloProducto,
             formatoCLP.format(servicio.valorProducto)
         ]);
 
-        // 9. Generar la tabla en el PDF
         autoTable(doc, {
             head: [columns],
             body: rows,
-            startY: 68,
-            theme: "grid",
+            startY: y,
+            margin: {left: margin, right: margin},
+            theme: "plain",
             headStyles: {
-                fillColor: [2, 132, 199],
-                textColor: 255,
+                fillColor: [15, 23, 42], // slate-900
+                textColor: [255, 255, 255],
                 fontStyle: "bold",
+                fontSize: 8,
+                cellPadding: {top: 4, bottom: 4, left: 5, right: 5},
+                halign: "left",
+            },
+            columnStyles: {
+                0: {cellWidth: 12, halign: "center", textColor: [100, 116, 139]},
+                1: {cellWidth: "auto"},
+                2: {cellWidth: 40, halign: "right", fontStyle: "bold"},
+            },
+            bodyStyles: {
+                fontSize: 9,
+                cellPadding: {top: 3.5, bottom: 3.5, left: 5, right: 5},
+                textColor: [30, 41, 59],
+            },
+            alternateRowStyles: {
+                fillColor: [248, 250, 252], // slate-50
             },
             styles: {
-                fontSize: 10,
-                cellPadding: 4,
+                lineWidth: 0,
+                overflow: "linebreak",
+            },
+            didDrawPage: (data) => {
+                // Línea inferior de la tabla
+                doc.setDrawColor(226, 232, 240);
+                doc.setLineWidth(0.3);
+                doc.line(margin, data.cursor.y, rightX, data.cursor.y);
             },
         });
 
-        // 10. Agregar totales debajo de la tabla
+        // ── Totales ──
         let finalY = doc.lastAutoTable.finalY + 10;
-        doc.setFontSize(12);
+
+        // Subtotal
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
         doc.setTextColor(100, 116, 139);
-        doc.text(`Subtotal: ${formatoCLP.format(totalPresupuesto)}`, 14, finalY);
+        doc.text("Subtotal:", rightX - 50, finalY);
+        doc.text(formatoCLP.format(totalPresupuesto), rightX, finalY, {align: "right"});
 
         if (valorFinalDescuento) {
+            // Descuento
+            finalY += 7;
+            const descuento = totalPresupuesto - Number(valorFinalDescuento);
+            const porcentaje = totalPresupuesto > 0 ? Math.round((descuento / totalPresupuesto) * 100) : 0;
+            doc.setFontSize(9);
+            doc.setTextColor(22, 163, 74); // green-600
+            doc.text(`Descuento (${porcentaje}%):`, rightX - 50, finalY);
+            doc.text(`-${formatoCLP.format(descuento)}`, rightX, finalY, {align: "right"});
+
+            // Línea separadora
+            finalY += 4;
+            doc.setDrawColor(212, 175, 55);
+            doc.setLineWidth(0.4);
+            doc.line(rightX - 55, finalY, rightX, finalY);
+
+            // Total final
             finalY += 8;
-            doc.setFontSize(14);
             doc.setFont("helvetica", "bold");
-            doc.setTextColor(2, 132, 199); // sky-600
-            doc.text(`Valor Final con Descuento: ${formatoCLP.format(Number(valorFinalDescuento))}`, 14, finalY);
-            doc.setFont("helvetica", "normal");
+            doc.setFontSize(13);
+            doc.setTextColor(15, 23, 42);
+            doc.text("Total:", rightX - 50, finalY);
+            doc.text(formatoCLP.format(Number(valorFinalDescuento)), rightX, finalY, {align: "right"});
         } else {
+            // Línea separadora
+            finalY += 4;
+            doc.setDrawColor(212, 175, 55);
+            doc.setLineWidth(0.4);
+            doc.line(rightX - 55, finalY, rightX, finalY);
+
+            // Total
             finalY += 8;
-            doc.setFontSize(14);
             doc.setFont("helvetica", "bold");
-            doc.setTextColor(30, 41, 59);
-            doc.text(`Total: ${formatoCLP.format(totalPresupuesto)}`, 14, finalY);
-            doc.setFont("helvetica", "normal");
+            doc.setFontSize(13);
+            doc.setTextColor(15, 23, 42);
+            doc.text("Total:", rightX - 50, finalY);
+            doc.text(formatoCLP.format(totalPresupuesto), rightX, finalY, {align: "right"});
         }
 
-        // 7. Descargar el archivo
+        // ── Footer ──
+        const footerY = doc.internal.pageSize.getHeight() - 15;
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(0.3);
+        doc.line(margin, footerY - 5, rightX, footerY - 5);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7);
+        doc.setTextColor(148, 163, 184);
+        doc.text("Este presupuesto es referencial y tiene una vigencia de 30 dias desde su fecha de emision.", margin, footerY);
+        doc.text("AgendaClinica · Healthcare Information System", rightX, footerY, {align: "right"});
+
         doc.save("presupuesto-tratamiento.pdf");
     }
 

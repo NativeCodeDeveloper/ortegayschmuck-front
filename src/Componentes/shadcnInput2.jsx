@@ -16,7 +16,7 @@ export function ShadcnInput({
             placeholder={placeholder}
             value={value ?? ""}
             onChange={onChange}
-            className={`border-blue-800 ${className}`}
+            className={`border-blue-800 text-slate-900 ${className}`}
             {...props}
         />
     );

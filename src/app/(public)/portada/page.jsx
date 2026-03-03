@@ -131,14 +131,14 @@ export default function Portada({ slides = defaultHeroSlides }) {
 
                       <div className="mt-8 mb-3.5 flex flex-col gap-3 sm:flex-row sm:items-center">
                         <Link
-                          href="/reserva-hora"
+                          href="/agendaProfesionales"
                           aria-label="Agendar hora"
                           className="inline-flex w-full justify-center rounded-full border border-white/20 bg-white px-7 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-black transition duration-300 ease-out hover:bg-white/90 sm:w-auto"
                         >
                           Agendar hora
                         </Link>
                         <Link
-                          href="/#servicios"
+                          href="/agendaProfesionales"
                           aria-label="Ir a servicios"
                           className="inline-flex w-full justify-center rounded-full border border-white/35 bg-white/10 px-7 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white transition duration-300 ease-out hover:bg-white/20 sm:w-auto"
                         >

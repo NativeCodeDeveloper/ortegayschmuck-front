@@ -5,6 +5,7 @@ import Link from "next/link";
 import ShadcnButton2 from "@/Componentes/shadcnButton2";
 import {toast} from "react-hot-toast";
 import * as React from "react";
+import {useParams, useRouter} from "next/navigation";
 
 function formatDateToYMD(date) {
     const y = date.getFullYear();
@@ -14,10 +15,38 @@ function formatDateToYMD(date) {
 }
 
 export default function CalendarioMensualHoras() {
+    const {id_profesional} = useParams();
+    const [nombreProfesional, setNombreProfesional] = useState("");
     const [mesActual, setMesActual] = useState(new Date());
     const [fechaSeleccionada, setFechaSeleccionada] = useState(null);
     // Ref para evitar que resultados asíncronos antiguos sobrescriban acciones manuales recientes
     const lastManualUpdateRef = useRef(0);
+    const API = process.env.NEXT_PUBLIC_API_URL;
+    
+    const router = useRouter();
+    
+    function formularioReservaProfesional(id_profesional) {
+        router.push(`/formularioReservaProfesional/${id_profesional}`);
+    }
+
+    useEffect(() => {
+        async function obtenerNombreProfesional() {
+            try {
+                const res = await fetch(`${API}/profesionales/seleccionarProfesional`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({id_profesional})
+                });
+                const data = await res.json();
+                if (data && data[0]?.nombreProfesional) {
+                    setNombreProfesional(data[0].nombreProfesional);
+                }
+            } catch (err) {
+                console.error("Error obteniendo nombre profesional:", err);
+            }
+        }
+        if (id_profesional) obtenerNombreProfesional();
+    }, [id_profesional]);
 
     const {
         horaInicio, setHoraInicio,
@@ -180,7 +209,7 @@ export default function CalendarioMensualHoras() {
                     if (idx + 1 < attentionSlots.length) neighbors.push(attentionSlots[idx + 1]);
 
                     for (const n of neighbors) {
-                        const res = await validarFechaDisponible(formatDateToYMD(fechaSeleccionada), n.start, formatDateToYMD(fechaSeleccionada), n.end, false);
+                        const res = await validarFechaDisponible(formatDateToYMD(fechaSeleccionada), n.start, formatDateToYMD(fechaSeleccionada), n.end, false, id_profesional);
                         // res is object {available, ...}
                         if (res && res.available) {
                             setBlockedHours(prev => {
@@ -201,7 +230,7 @@ export default function CalendarioMensualHoras() {
     };
 
     const dias = generarDiasMes();
-    const API = process.env.NEXT_PUBLIC_API_URL;
+
 
     const [blockedHours, setBlockedHours] = useState(new Set());
     const [checkingBlocked, setCheckingBlocked] = useState(false);
@@ -209,7 +238,7 @@ export default function CalendarioMensualHoras() {
 
     // Comprueba si un slot está disponible. Devuelve true si está disponible, false si está ocupado.
     // showToast: opcional, si true mostrará mensajes de error al usuario.
-    async function validarFechaDisponible(fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, showToast = false) {
+    async function validarFechaDisponible(fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, showToast = false, id_profesional) {
         try {
             // validación mínima de parámetros
             if (!fechaInicio || !fechaFinalizacion || !horaInicio || !horaFinalizacion) {
@@ -223,7 +252,7 @@ export default function CalendarioMensualHoras() {
                     Accept: 'application/json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion})
+                body: JSON.stringify({fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, id_profesional})
             });
 
             let respuestaBackend;
@@ -296,7 +325,7 @@ export default function CalendarioMensualHoras() {
                 for (let i = 0; i < attentionEntries.length; i += limit) {
                     const batch = attentionEntries.slice(i, i + limit);
                     const batchResults = await Promise.all(batch.map(async (entry) => {
-                        const result = await validarFechaDisponible(fechaYMD, entry.start, fechaYMD, entry.end, false);
+                        const result = await validarFechaDisponible(fechaYMD, entry.start, fechaYMD, entry.end, false, id_profesional);
                         return {h: entry.start, ...result};
                     }));
 
@@ -307,11 +336,13 @@ export default function CalendarioMensualHoras() {
 
                 const blocked = new Set(checks.filter(c => c.available === false).map(c => c.h));
                 // Si hubo una actualización manual después de que este check comenzó, NO aplicamos su resultado
+
                 if (lastManualUpdateRef.current > checkStart) {
                     console.debug('checkBlocked result skipped because of manual update', {
                         skippedAt: lastManualUpdateRef.current,
                         checkStart
                     });
+
                 } else {
                     setBlockedHours(blocked);
                     // actualizar resumen para debug en UI
@@ -359,7 +390,7 @@ export default function CalendarioMensualHoras() {
                     <h1
                         className={`text-3xl sm:text-4xl font-black tracking-widest `}
                     >
-                        <span className="bg-gradient-to-r from-slate-900 via-gray-800 to-slate-700 text-transparent bg-clip-text ">Ortega & Schmuck</span>
+                        <span className="bg-gradient-to-r from-slate-900 via-gray-800 to-slate-700 text-transparent bg-clip-text ">{nombreProfesional || "Cargando..."}</span>
                         <span
                             className="relative mt-1 block h-1 w-40 max-w-full rounded-full bg-gradient-to-r from-slate-400 via-slate-200 to-transparent"
                         />
@@ -505,26 +536,26 @@ export default function CalendarioMensualHoras() {
                                         return !isBlocked && !isPastHour;
                                     })
                                     .map((entry, idx) => {
-                                    const selected = horaInicio === entry.start;
+                                        const selected = horaInicio === entry.start;
 
-                                    return (
-                                        <div key={entry.start}
-                                             className={"flex items-center justify-between rounded-xl border p-3 shadow-sm hover:shadow-md hover:shadow-slate-900/5 transition " + (selected ? "bg-green-50 border-green-300" : "bg-white/90 border-slate-200")}>
-                                            <div>
-                                                <div className="text-sm font-medium text-slate-800">Atención</div>
-                                                <div className="text-xs text-slate-500">{entry.start} – {entry.end}</div>
+                                        return (
+                                            <div key={entry.start}
+                                                 className={"flex items-center justify-between rounded-xl border p-3 shadow-sm hover:shadow-md hover:shadow-slate-900/5 transition " + (selected ? "bg-green-50 border-green-300" : "bg-white/90 border-slate-200")}>
+                                                <div>
+                                                    <div className="text-sm font-medium text-slate-800">Atención</div>
+                                                    <div className="text-xs text-slate-500">{entry.start} – {entry.end}</div>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <button
+                                                        onClick={() => seleccionarInicio(entry.start)}
+                                                        className={"px-3 py-1 rounded-lg font-semibold shadow-sm transition active:scale-[0.98] " + (selected ? 'bg-green-600 text-white shadow-md' : 'bg-gray-900 text-white hover:bg-gray-800 hover:shadow-md hover:shadow-slate-900/5')}
+                                                    >
+                                                        {selected ? 'Seleccionada' : 'Seleccionar'}
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center gap-3">
-                                                <button
-                                                    onClick={() => seleccionarInicio(entry.start)}
-                                                    className={"px-3 py-1 rounded-lg font-semibold shadow-sm transition active:scale-[0.98] " + (selected ? 'bg-green-600 text-white shadow-md' : 'bg-gray-900 text-white hover:bg-gray-800 hover:shadow-md hover:shadow-slate-900/5')}
-                                                >
-                                                    {selected ? 'Seleccionada' : 'Seleccionar'}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )
-                                })}
+                                        )
+                                    })}
 
                                 {attentionSlots.filter((entry) => {
                                     const isBlocked = blockedHours.has(entry.start);
@@ -558,13 +589,13 @@ export default function CalendarioMensualHoras() {
                 <br/>
 
                 <div className="flex gap-5 justify-center">
-                    <Link href={"/"}>
+                    <Link href={"/agendaProfesionales"}>
                         <ShadcnButton2 nombre={"RETROCEDER"}/>
                     </Link>
 
-                    <Link href={"/formularioReserva"}>
-                        <ShadcnButton2 nombre={"SIGUIENTE"}/>
-                    </Link>
+
+                        <ShadcnButton2 nombre={"SIGUIENTE"} funcion={()=>formularioReservaProfesional(id_profesional)}/>
+
                 </div>
 
                 <footer className="mt-10 text-center text-xs text-slate-600">
