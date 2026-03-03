@@ -23,6 +23,7 @@ import {InputTextDinamic} from "@/Componentes/InputTextDinamic";
 
 export default function PresupuestoTratamiento() {
     const API = process.env.NEXT_PUBLIC_API_URL;
+    const EMPRESA_NOMBRE = process.env.NEXT_PUBLIC_EMPRESA_NOMBRE || "Ortega & Schmuck";
     const [listaServicios, setListaServicios] = useState([]);
     const [listaPresupuesto, setListaPresupuesto] = useState([]);
     const [totalPresupuesto, setTotalPresupuesto] = useState(0);
@@ -102,45 +103,39 @@ export default function PresupuestoTratamiento() {
         } catch (e) { /* fallback a helvetica */ }
 
         // ── Header con franja oscura ──
-        const empresaNombre = process.env.NEXT_PUBLIC_EMPRESA_NOMBRE || "Ortega & Schmuck";
         doc.setFillColor(15, 23, 42); // slate-900
-        doc.rect(0, 0, pageW, 42, "F");
+        doc.rect(0, 0, pageW, 36, "F");
 
         // Línea dorada decorativa
         doc.setDrawColor(212, 175, 55);
         doc.setLineWidth(0.6);
-        doc.line(margin, 42, rightX, 42);
+        doc.line(margin, 36, rightX, 36);
 
         // Nombre empresa
         try { doc.setFont("Michroma", "normal"); } catch (e) { doc.setFont("helvetica", "bold"); }
-        doc.setFontSize(14);
-        doc.setTextColor(255, 255, 255);
-        doc.text(empresaNombre, margin, 14);
-
-        // Título sistema
         doc.setFontSize(18);
         doc.setTextColor(255, 255, 255);
-        doc.text("AgendaClinica", margin, 24);
+        doc.text(EMPRESA_NOMBRE, margin, 17);
 
         // Subtítulo
         doc.setFontSize(7);
         doc.setTextColor(148, 163, 184); // slate-400
-        doc.text("Healthcare Information System", margin, 30);
+        doc.text("Odontologia y Medicina Estetica", margin, 24);
 
         // Fecha alineada a la derecha en el header
         doc.setFont("helvetica", "normal");
         doc.setFontSize(8);
         doc.setTextColor(148, 163, 184);
-        doc.text(new Date().toLocaleDateString("es-CL", {day: "2-digit", month: "long", year: "numeric"}), rightX, 20, {align: "right"});
+        doc.text(new Date().toLocaleDateString("es-CL", {day: "2-digit", month: "long", year: "numeric"}), rightX, 17, {align: "right"});
 
         // Tipo de documento
         doc.setFont("helvetica", "bold");
         doc.setFontSize(8);
         doc.setTextColor(212, 175, 55); // dorado
-        doc.text("PRESUPUESTO DE TRATAMIENTO", rightX, 28, {align: "right"});
+        doc.text("PRESUPUESTO DE TRATAMIENTO", rightX, 24, {align: "right"});
 
         // ── Datos del presupuesto ──
-        let y = 52;
+        let y = 46;
         const profesionalLabel = listaProfesionales.find(p => String(p.id_profesional) === String(nombreProfesional));
 
         // Fondo sutil para sección datos
@@ -164,7 +159,7 @@ export default function PresupuestoTratamiento() {
         doc.text(rutaPaciente || "-", margin + 80, y + 18);
 
         // ── Tabla de servicios ──
-        y = 86;
+        y = 80;
 
         const columns = ["#", "Servicio / Procedimiento", "Valor"];
         const rows = listaPresupuesto.map((servicio, i) => [
