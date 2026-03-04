@@ -7,19 +7,6 @@ import {toast} from "react-hot-toast";
 import {useParams, useRouter} from "next/navigation";
 import {SelectDinamic} from "@/Componentes/SelectDinamic";
 
-
-import * as React from "react"
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import Link from "next/link";
-import {Type} from "lucide-react";
-
 export default function FormularioReservaProfesional() {
     const API = process.env.NEXT_PUBLIC_API_URL;
     const [nombrePaciente, setNombrePaciente] = useState("");
@@ -28,11 +15,11 @@ export default function FormularioReservaProfesional() {
     const [telefono, setTelefono] = useState("");
     const [email, setEmail] = useState("");
     const {horaInicio, horaFin, fechaInicio, fechaFinalizacion,} = useAgenda();
-    const [servicios, setServicios] = useState([]);
     const [listaTarifasProfesionales, setListaTarifasProfesionales] = useState([]);
 
     const [profesionalSeleccionado, setProfesionalSeleccionado] = useState("");
     const [servicioSeleccionado, setServicioSeleccionado] = useState("");
+    const [tarifaSeleccionadaIndex, setTarifaSeleccionadaIndex] = useState("");
     const[descripcionProfesional, setDescripcionProfesional] = useState("");
 
     const {id_profesional} = useParams();
@@ -112,7 +99,6 @@ export default function FormularioReservaProfesional() {
 
     // handleSubmit: se ejecuta al enviar el formulario
     // Envía los datos al backend que crea la preferencia de Mercado Pago
-
     async function pagarMercadoPago(
         nombrePaciente,
         apellidoPaciente,
@@ -124,9 +110,12 @@ export default function FormularioReservaProfesional() {
         fechaFinalizacion,
         horaFin,
         totalPago,
+        profesionalSeleccionado,
+        servicioSeleccionado,
+        id_profesional
     ) {
         try {
-            if (!nombrePaciente || !apellidoPaciente || !rut || !telefono || !email || !fechaInicio || !horaInicio || !fechaFinalizacion || !horaFin) {
+            if (!nombrePaciente || !apellidoPaciente || !rut || !telefono || !email || !fechaInicio || !horaInicio || !fechaFinalizacion || !horaFin || !id_profesional) {
                 return toast.error("Debe completar toda la informacion para realizar la reserva")
             }
 
@@ -143,25 +132,21 @@ export default function FormularioReservaProfesional() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    productosDelCarrito: [
-                        {
-                            tituloProducto: "Consulta médica",
-                            precio: Number(totalPago),
-                            cantidad: 1,
-                        }
-                    ],
-                    comprador: {
-                        nombre_comprador: nombrePaciente,
-                        apellidosComprador: apellidoPaciente,
-                        telefono_comprador: telefono,
-                        email_Comprador: email,
-                        identificacion_comprador: rut,
-                        direccion_despacho: "",
-                        comuna: "",
-                        regionPais: "",
-                        comentarios: `Fecha: ${fechaInicio} | Hora: ${horaInicio} - ${horaFinalizacion}`,
-                        totalPagado: Number(totalPago),
-                    }
+                    tituloProducto: `Reserva Consulta: ${servicioSeleccionado} con ${profesionalSeleccionado}`,
+                    precio: Number(totalPago),
+                    cantidad: 1,
+                    nombrePaciente,
+                    apellidoPaciente,
+                    rut,
+                    telefono,
+                    email,
+                    fechaInicio,
+                    horaInicio,
+                    fechaFinalizacion,
+                    horaFinalizacion,
+                    estadoReserva : 'reservada',
+                    totalPago,
+                    id_profesional
                 }),
                 mode: "cors",
             });
@@ -175,8 +160,8 @@ export default function FormularioReservaProfesional() {
 
             if (data) {
 
-                //data.sandbox_init_point
-                const checkoutUrl =  data?.init_point;
+                //data.sandbox_init_point || PARA PRUEBAS LOCALES ||data?.init_point;
+                const checkoutUrl = data?.init_point;
                 console.log("checkoutUrl:", checkoutUrl);
 
                 if (checkoutUrl) {
@@ -244,14 +229,22 @@ export default function FormularioReservaProfesional() {
                         <div className="mt-4">
                             <label className="mb-1.5 block text-xs font-semibold text-slate-700">Motivo de consulta</label>
                             <SelectDinamic
-                                value={totalPago}
-                                onChange={(e) => setTotalPago(e.target.value)}
+                                value={tarifaSeleccionadaIndex}
+                                onChange={(e) => {
+                                    const index = e.target.value;
+                                    setTarifaSeleccionadaIndex(index);
+                                    const tarifa = listaTarifasProfesionales[index];
+                                    if (tarifa) {
+                                        setTotalPago(tarifa.precio);
+                                        setServicioSeleccionado(tarifa.nombreServicio);
+                                    }
+                                }}
                                 placeholder="Seleccione un servicio"
-                                options={listaTarifasProfesionales.map((tarifa) => ({
-                                    value: tarifa.precio,
+                                options={listaTarifasProfesionales.map((tarifa, index) => ({
+                                    value: index,
                                     label: `${tarifa.nombreServicio} - ${formatoCLP.format(tarifa.precio)}`
                                 }))}
-                                className={totalPago ? "border-emerald-400 bg-emerald-50/50 font-medium text-slate-900" : ""}
+                                className={tarifaSeleccionadaIndex !== "" ? "border-emerald-400 bg-emerald-50/50 font-medium text-slate-900" : ""}
                             />
                         </div>
                     </div>
@@ -372,7 +365,10 @@ export default function FormularioReservaProfesional() {
                                     horaInicio,
                                     fechaFinalizacion,
                                     horaFin,
-                                    totalPago
+                                    totalPago,
+                                    profesionalSeleccionado,
+                                    servicioSeleccionado,
+                                    id_profesional
                                 );
                             }}
                         />
