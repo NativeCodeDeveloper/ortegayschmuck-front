@@ -83,11 +83,13 @@ export default function Calendario() {
             }else{
                 const respustaBackend = await res.json();
 
-                if(respustaBackend){
+                if(respustaBackend && respustaBackend.length > 0){
                     setListaProfesionales(respustaBackend);
-
+                    if (!id_profesional) {
+                        setId_profesional(respustaBackend[0].id_profesional);
+                    }
                 }else{
-                    return toast.error('Error al cargar los profesionales, por favor intente nuevamente.');
+                    return toast.error('No hay profesionales o servicios ingresados en el sistema');
                 }
             }
         }catch (error) {
@@ -164,13 +166,16 @@ export default function Calendario() {
         }
     }
 
-    async function cargarBloqueos() {
+    async function cargarBloqueosPorProfesional(id_profesional) {
         try {
-            const res = await fetch(`${API}/bloqueoAgenda/seleccionarTodos`, {
-                method: "GET",
-                headers: {Accept: "application/json"},
-                mode: "cors"
+            const res = await fetch(`${API}/bloqueoAgenda/seleccionarBloqueosPorProfesional`, {
+                method: "POST",
+                headers: {Accept: "application/json",
+                "Content-Type": "application/json"},
+                mode: "cors",
+                body: JSON.stringify({id_profesional})
             });
+
             if (!res.ok) return;
             const data = await res.json();
             setDataBloqueos(Array.isArray(data) ? data : []);
@@ -182,64 +187,22 @@ export default function Calendario() {
     async function refrescarCalendario() {
         if (id_profesional) {
             await cargarDataPorProfesional(id_profesional);
-        } else {
-            await cargarDataAgenda();
+            await cargarBloqueosPorProfesional(id_profesional)
         }
-        await cargarBloqueos();
+
     }
 
-    useEffect(() => { cargarDataAgenda(); cargarBloqueos(); }, []);
+    useEffect(() => { cargarDataAgenda(); }, []);
 
     useEffect(() => {
         if (id_profesional) {
             cargarDataPorProfesional(id_profesional);
+            cargarBloqueosPorProfesional(id_profesional);
         } else {
             cargarDataAgenda();
         }
     }, [id_profesional]);
-
-    async function bloquearAgenda(fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, id_profesional) {
-        try {
-            if (!fechaInicio || !horaInicio || !horaFinalizacion || !id_profesional) {
-                return toast.error('Debe llenar los campos de fechas y seleccionar un profesional para bloquear un periodo');
-            }
-            const nombrePaciente = "AGENDA BLOQUEADA";
-            const apellidoPaciente = "-";
-            const rut = "-";
-            const telefono = "-";
-            const email = "-";
-            const ahora = new Date();
-            const inicio = new Date(`${fechaInicio}T${horaInicio}`);
-            const final = new Date(`${fechaFinalizacion}T${horaFinalizacion}`);
-            if (inicio < ahora) return toast.error("No es posible agendar en fechas NO vigentes");
-            if (final < inicio) return toast.error("No es posible en fechas irreales");
-            if (isOverlapping(inicio, final)) return toast.error('La hora seleccionada ya está ocupada (verifique otras horas)');
-
-            if (fechaInicio === fechaFinalizacion) {
-                const res = await fetch(`${API}/reservaPacientes/insertarReserva`, {
-                    method: "POST",
-                    headers: {Accept: "application/json", "Content-Type": "application/json"},
-                    mode: "cors",
-                    body: JSON.stringify({nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, estadoReserva: "reservada", id_profesional})
-                });
-                const respuestaBackend = await res.json();
-                if (respuestaBackend.message === true) {
-                    setNombrePaciente(""); setApellidoPaciente(""); setTelefono(""); setRut(""); setEmail("");
-                    await refrescarCalendario();
-                    return toast.success("Se ha bloqueado el periodo indicado correctamente.");
-                } else if (respuestaBackend.message === "conflicto" || respuestaBackend.message.includes("conflicto")) {
-                    return toast.error("No puede agendar una hora que ya esta ocupada");
-                } else if (respuestaBackend.message === false) {
-                    return toast.error('Asegure que no esta ocupada la Hora');
-                }
-            } else {
-                return toast.error("Solo se permite bloquear periodos dentro de un mismo dia.");
-            }
-        } catch (error) {
-            console.log(error);
-            return toast.error('Sin respuesta del servidor contacte a soporte.');
-        }
-    }
+    
 
     async function insertarNuevaReserva(nombrePaciente, apellidoPaciente, rut, telefono, email, fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion,id_profesional) {
         try {
@@ -399,6 +362,45 @@ export default function Calendario() {
         setNombrePaciente(""); setApellidoPaciente(""); setTelefono(""); setRut(""); setEmail("");
     }
 
+
+
+
+    async function eliminadoReserva(id_reserva) {
+        try {
+            if (!id_reserva) {
+                return toast.error("Debe seleccionar al menos una reserva valida para realizar la eliminacion")
+            }
+
+            const res = await fetch(`${API}/reservaPacientes/eliminarReserva`, {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({id_reserva}),
+                mode: "cors"
+            })
+
+            if (!res.ok) {
+                return toast.error("No hay conexion con el servidor por favor contacte a Soporte");
+            } else {
+
+                const respuestaBackend = await res.json();
+                if (respuestaBackend.message === true) {
+                    return toast.success("Se ha eliminado con exito la reserva");
+                } else if (respuestaBackend.message === false) {
+                    return toast.success("No se ha podido eliminar la reserva. Intente mas tarde.");
+                } else {
+                    return toast.error("No hay conexion con el servidor por favor contacte a Soporte");
+                }
+            }
+
+        } catch (error) {
+            console.log(error);
+            return toast.error("No hay conexion con el servidor por favor contacte a Soporte");
+        }
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50/30">
             <ToasterClient/>
@@ -462,7 +464,7 @@ export default function Calendario() {
                                     <label className="block text-sm font-medium text-slate-700 mb-1.5">Profesional</label>
                                     <SelectDinamic
                                         value={id_profesional}
-                                        onChange={(e) => setId_profesional(e.target.value)}
+                                        onChange={(e) => setId_profesional(Number(e.target.value))}
                                         options={listaProfesionales.map(profesional => ({
                                             value: profesional.id_profesional,
                                             label: profesional.nombreProfesional
@@ -552,12 +554,12 @@ export default function Calendario() {
                             </button>
 
                             <button
-                                onClick={() => bloquearAgenda(fechaInicio, horaInicio, fechaFinalizacion, horaFinalizacion, id_profesional)}
+                                onClick={() => eliminadoReserva(id_reserva)}
                                 className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors duration-150">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
                                 </svg>
-                                Bloquear
+                                Eliminar Reservacion
                             </button>
                         </div>
                     </div>
@@ -571,6 +573,11 @@ export default function Calendario() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
                             <h2 className="text-sm font-semibold text-slate-700 tracking-wide uppercase">Calendario de Reservas</h2>
+                            {id_profesional && (
+                                <span className="text-xs text-sky-600 font-medium ml-2">
+                                    — Agenda de: {listaProfesionales.find(p => p.id_profesional === id_profesional)?.nombreProfesional ?? ""}
+                                </span>
+                            )}
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-1.5">

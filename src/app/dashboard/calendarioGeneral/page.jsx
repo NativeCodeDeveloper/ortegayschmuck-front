@@ -120,10 +120,13 @@ export default function Calendario() {
                 return toast.error('Error al cargar los profesionales, por favor intente nuevamente.');
             } else {
                 const respustaBackend = await res.json();
-                if (respustaBackend) {
+                if (respustaBackend && respustaBackend.length > 0) {
                     setListaProfesionales(respustaBackend);
+                    if (!id_profesional) {
+                        setId_profesional(respustaBackend[0].id_profesional);
+                    }
                 } else {
-                    return toast.error('Error al cargar los profesionales, por favor intente nuevamente.');
+                    return toast.error('No hay profesionales o servicios ingresados en el sistema');
                 }
             }
         } catch (error) {
@@ -213,12 +216,13 @@ export default function Calendario() {
         }
     }
 
-    async function cargarBloqueos() {
+    async function cargarBloqueosPorProfesional(id_profesional) {
         try {
-            const res = await fetch(`${API}/bloqueoAgenda/seleccionarTodos`, {
-                method: "GET",
-                headers: {Accept: "application/json"},
-                mode: "cors"
+            const res = await fetch(`${API}/bloqueoAgenda/seleccionarBloqueosPorProfesional`, {
+                method: "POST",
+                headers: {Accept: "application/json", "Content-Type": "application/json"},
+                mode: "cors",
+                body: JSON.stringify({id_profesional})
             });
             if (!res.ok) return;
             const data = await res.json();
@@ -231,20 +235,16 @@ export default function Calendario() {
     async function refrescarCalendario() {
         if (id_profesional) {
             await cargarDataPorProfesional(id_profesional);
-        } else {
-            await cargarDataAgenda();
+            await cargarBloqueosPorProfesional(id_profesional);
         }
-        await cargarBloqueos();
     }
 
-    useEffect(() => {
-        cargarDataAgenda();
-        cargarBloqueos();
-    }, [])
+    useEffect(() => { cargarDataAgenda(); }, []);
 
     useEffect(() => {
         if (id_profesional) {
             cargarDataPorProfesional(id_profesional);
+            cargarBloqueosPorProfesional(id_profesional);
         } else {
             cargarDataAgenda();
         }
@@ -565,20 +565,22 @@ export default function Calendario() {
                                 <div>
                                     <h3 className="text-sm font-semibold text-slate-900">Calendario de Reservas</h3>
                                     <p className="text-xs text-slate-500">Navega por mes/semana/día y selecciona una reserva para ver su detalle.</p>
+                                    {id_profesional && (
+                                        <span className="text-xs text-sky-600 font-medium">
+                                            Agenda de: {listaProfesionales.find(p => p.id_profesional === id_profesional)?.nombreProfesional ?? ""}
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <div className="w-64">
                                         <SelectDinamic
                                             value={id_profesional}
-                                            onChange={(e) => setId_profesional(e.target.value)}
-                                            options={[
-                                                {value: "", label: "Todos los profesionales"},
-                                                ...listaProfesionales.map(profesional => ({
-                                                    value: profesional.id_profesional,
-                                                    label: profesional.nombreProfesional
-                                                }))
-                                            ]}
-                                            placeholder="Filtrar por profesional"
+                                            onChange={(e) => setId_profesional(Number(e.target.value))}
+                                            options={listaProfesionales.map(profesional => ({
+                                                value: profesional.id_profesional,
+                                                label: profesional.nombreProfesional
+                                            }))}
+                                            placeholder="Selecciona un profesional"
                                         />
                                     </div>
                                     <div className="text-xs text-slate-500">Vista: <span className="font-medium text-slate-700">{currentView}</span></div>
