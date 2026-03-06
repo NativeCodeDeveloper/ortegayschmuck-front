@@ -59,7 +59,7 @@ export default function FormularioReservaProfesional() {
 
     async function seleccionarTodasTarifasProfesionales(profesional_id) {
         try {
-            const res = await fetch(`${API}/tarifasProfesional/seleccionarTarifaProfesional`, {
+            const res = await fetch(`${API}/tarifasProfesional/seleccionarTarifasPorProfesional`, {
                 method: 'POST',
                 headers: {Accept: 'application/json',
                 'Content-Type': 'application/json',},
