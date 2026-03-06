@@ -13,7 +13,6 @@ const links = [
   { label: "Carpeta del paciente", href: "/dashboard/FichaClinica" },
   { label: "Publicaciones", href: "/dashboard/publicaciones" },
   { label: "Carrusel de Portada", href: "/dashboard/portadaEdit" },
-  { label: "Otros", href: "/dashboard/Pruebas" },
 ];
 
 const sections = [
@@ -78,18 +77,6 @@ export default function MobileNav() {
                   </div>
                 </div>
               ))}
-
-              {/* Otros */}
-              <div className="border-t border-slate-100 pt-2">
-                <Link
-                  href="/dashboard/Pruebas"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[13px] font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all"
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
-                  Otros
-                </Link>
-              </div>
 
               {/* Volver al sitio */}
               <div className="border-t border-slate-100 pt-2">

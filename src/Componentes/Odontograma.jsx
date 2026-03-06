@@ -44,11 +44,23 @@ const TOOLS = [
     { id: "amalgamaAntigua", label: "Amalgama antigua", color: "bg-gray-600", type: "surface" },
     { id: "resinaAntigua", label: "Resina antigua", color: "bg-cyan-700", type: "surface" },
     { id: "amalgamaDefectuosa", label: "Amalgama defect.", color: "bg-orange-500", type: "surface" },
+    { id: "fractura", label: "Fractura", color: "bg-orange-400", type: "surface" },
+    { id: "selladas", label: "Selladas", color: "bg-emerald-500", type: "surface" },
+    { id: "vidrioIonomero", label: "Vidrio Ionómero", color: "bg-blue-800", type: "surface" },
+    { id: "abfraccion", label: "Abfracción", color: "bg-amber-900", type: "surface" },
     { id: "eraser", label: "Borrar", color: "bg-slate-400", type: "any" },
     { id: "absent", label: "Ausente", color: "bg-gray-900", type: "whole" },
     { id: "restoRadicular", label: "Resto radicular", color: "bg-red-600", type: "whole" },
     { id: "protesisFija", label: "Prótesis fija", color: "bg-green-500", type: "whole" },
     { id: "prosthesisExisting", label: "Prótesis exist.", color: "bg-blue-400", type: "whole" },
+    { id: "corona", label: "Corona", color: "bg-blue-500", type: "whole" },
+    { id: "piezaExtraida", label: "Pieza Extraída", color: "bg-gray-700", type: "whole" },
+    { id: "extraccionIndicada", label: "Extracción indicada", color: "bg-red-500", type: "whole" },
+    { id: "extraidaOrtodoncia", label: "Extraída Ortodoncia", color: "bg-blue-600", type: "whole" },
+    { id: "indicadaOrtodoncia", label: "Indicada Ortodoncia", color: "bg-rose-500", type: "whole" },
+    { id: "indicadaSellante", label: "Indicada Sellante", color: "bg-green-600", type: "whole" },
+    { id: "piezaFaltante", label: "Pieza faltante", color: "bg-cyan-500", type: "whole" },
+    { id: "piezaSana", label: "Pieza Sana", color: "bg-blue-200", type: "whole" },
 ];
 
 // ── Colores de estado para las caras ──
@@ -59,6 +71,10 @@ const SURFACE_COLORS = {
     amalgamaAntigua: "#4b5563",
     resinaAntigua: "#0e7490",
     amalgamaDefectuosa: "#f97316",
+    fractura: "#fb923c",
+    selladas: "#10b981",
+    vidrioIonomero: "#1e40af",
+    abfraccion: "#78350f",
 };
 
 // ── Estado inicial de un diente ──
@@ -70,6 +86,14 @@ function emptyTooth() {
             restoRadicular: false,
             protesisFija: false,
             prosthesisExisting: false,
+            corona: false,
+            piezaExtraida: false,
+            extraccionIndicada: false,
+            extraidaOrtodoncia: false,
+            indicadaOrtodoncia: false,
+            indicadaSellante: false,
+            piezaFaltante: false,
+            piezaSana: false,
         },
     };
 }
@@ -183,13 +207,88 @@ function ToothSVG({ number, data, tool, onClickSurface, onClickWhole, isTemporar
                     </g>
                 )}
 
+                {/* ── Corona (círculo azul) ── */}
+                {data.wholeTooth.corona && (
+                    <circle cx={half} cy={half} r={outer - 2} fill="none" stroke="#3b82f6" strokeWidth={2.5} pointerEvents="none" />
+                )}
+
+                {/* ── Pieza Extraída (X gris oscuro) ── */}
+                {data.wholeTooth.piezaExtraida && (
+                    <g stroke="#374151" strokeWidth={3} strokeLinecap="round" pointerEvents="none">
+                        <line x1={half - outer + 4} y1={half - outer + 4} x2={half + outer - 4} y2={half + outer - 4} />
+                        <line x1={half + outer - 4} y1={half - outer + 4} x2={half - outer + 4} y2={half + outer - 4} />
+                    </g>
+                )}
+
+                {/* ── Extracción indicada (X roja) ── */}
+                {data.wholeTooth.extraccionIndicada && (
+                    <g stroke="#ef4444" strokeWidth={3.5} strokeLinecap="round" pointerEvents="none">
+                        <line x1={half - outer + 4} y1={half - outer + 4} x2={half + outer - 4} y2={half + outer - 4} />
+                        <line x1={half + outer - 4} y1={half - outer + 4} x2={half - outer + 4} y2={half + outer - 4} />
+                    </g>
+                )}
+
+                {/* ── Extraída por Ortodoncia (+ azul) ── */}
+                {data.wholeTooth.extraidaOrtodoncia && (
+                    <g stroke="#2563eb" strokeWidth={3} strokeLinecap="round" pointerEvents="none">
+                        <line x1={half} y1={half - outer + 4} x2={half} y2={half + outer - 4} />
+                        <line x1={half - outer + 4} y1={half} x2={half + outer - 4} y2={half} />
+                    </g>
+                )}
+
+                {/* ── Indicada por Ortodoncia (+ rojo/rosa) ── */}
+                {data.wholeTooth.indicadaOrtodoncia && (
+                    <g stroke="#f43f5e" strokeWidth={3} strokeLinecap="round" pointerEvents="none">
+                        <line x1={half} y1={half - outer + 4} x2={half} y2={half + outer - 4} />
+                        <line x1={half - outer + 4} y1={half} x2={half + outer - 4} y2={half} />
+                    </g>
+                )}
+
+                {/* ── Indicada por Sellante (x verde, más pequeña) ── */}
+                {data.wholeTooth.indicadaSellante && (
+                    <g stroke="#16a34a" strokeWidth={2.5} strokeLinecap="round" pointerEvents="none">
+                        <line x1={half - inner} y1={half - inner} x2={half + inner} y2={half + inner} />
+                        <line x1={half + inner} y1={half - inner} x2={half - inner} y2={half + inner} />
+                    </g>
+                )}
+
+                {/* ── Pieza faltante (x cyan, más pequeña) ── */}
+                {data.wholeTooth.piezaFaltante && (
+                    <g stroke="#06b6d4" strokeWidth={2.5} strokeLinecap="round" pointerEvents="none">
+                        <line x1={half - inner} y1={half - inner} x2={half + inner} y2={half + inner} />
+                        <line x1={half + inner} y1={half - inner} x2={half - inner} y2={half + inner} />
+                    </g>
+                )}
+
+                {/* ── Pieza Sana (cuadrado con cruz punteada) ── */}
+                {data.wholeTooth.piezaSana && (
+                    <g stroke="#3b82f6" strokeWidth={1.5} strokeDasharray="3,2" pointerEvents="none">
+                        <rect x={half - inner} y={half - inner} width={inner * 2} height={inner * 2} fill="none" />
+                        <line x1={half} y1={half - inner} x2={half} y2={half + inner} />
+                        <line x1={half - inner} y1={half} x2={half + inner} y2={half} />
+                    </g>
+                )}
+
                 {/* ── Zona clickeable central para estados de diente completo ── */}
                 <rect
                     x={half - inner} y={half - inner}
                     width={inner * 2} height={inner * 2}
                     fill="transparent"
                     onClick={(e) => { e.stopPropagation(); onClickWhole(number); }}
-                    style={{ cursor: tool && TOOLS.find(t => t.id === tool)?.type === "whole" ? "pointer" : "default" }}
+                    style={{
+                        pointerEvents: (() => {
+                            const toolType = tool && TOOLS.find(t => t.id === tool)?.type;
+                            if (toolType === "whole") return "auto";
+                            if (tool === "eraser" && Object.values(data.wholeTooth).some(Boolean)) return "auto";
+                            return "none";
+                        })(),
+                        cursor: (() => {
+                            const toolType = tool && TOOLS.find(t => t.id === tool)?.type;
+                            if (toolType === "whole") return "pointer";
+                            if (tool === "eraser" && Object.values(data.wholeTooth).some(Boolean)) return "pointer";
+                            return "default";
+                        })(),
+                    }}
                 />
             </svg>
         </div>
@@ -228,6 +327,7 @@ const Odontograma = forwardRef(function Odontograma({ patientId, idOdontograma, 
     });
     const [activeTool, setActiveTool] = useState("caries");
     const [tooltip, setTooltip] = useState(null); // { number, surface, state }
+    const [dirtyTeeth, setDirtyTeeth] = useState(new Set()); // dientes modificados
 
     // ── Exponer funciones al padre via ref ──
     useImperativeHandle(ref, () => ({
@@ -276,6 +376,7 @@ const Odontograma = forwardRef(function Odontograma({ patientId, idOdontograma, 
                 return prev;
             }
 
+            setDirtyTeeth((prev) => new Set(prev).add(key));
             return { ...prev, [key]: { ...tooth, surfaces } };
         });
     }, [activeTool]);
@@ -290,9 +391,12 @@ const Odontograma = forwardRef(function Odontograma({ patientId, idOdontograma, 
             const tooth = { ...prev[key] };
 
             if (activeTool === "eraser") {
-                // Borrar todo el diente
-                setTooltip({ number, surface: "todo", state: "borrado" });
-                return { ...prev, [key]: emptyTooth() };
+                // Borrar solo estados de diente completo, conservar caras
+                const clearedWt = {};
+                for (const k of Object.keys(tooth.wholeTooth)) clearedWt[k] = false;
+                setTooltip({ number, surface: "diente", state: "overlays borrados" });
+                setDirtyTeeth((prev) => new Set(prev).add(key));
+                return { ...prev, [key]: { ...tooth, wholeTooth: clearedWt } };
             }
 
             if (toolDef.type !== "whole") return prev;
@@ -302,6 +406,7 @@ const Odontograma = forwardRef(function Odontograma({ patientId, idOdontograma, 
             wt[activeTool] = !wt[activeTool];
             setTooltip({ number, surface: "diente", state: `${toolDef.label}: ${wt[activeTool] ? "Sí" : "No"}` });
 
+            setDirtyTeeth((prev) => new Set(prev).add(key));
             return { ...prev, [key]: { ...tooth, wholeTooth: wt } };
         });
     }, [activeTool]);
@@ -319,13 +424,12 @@ const Odontograma = forwardRef(function Odontograma({ patientId, idOdontograma, 
             for (const [numeroDiente, datosDiente] of Object.entries(teeth)) {
                 const { surfaces, wholeTooth } = datosDiente;
 
-                // Solo enviar dientes que tengan algo marcado
+                // Enviar dientes que tengan algo marcado O que fueron modificados (borrados)
                 const tieneAlgo =
                     surfaces.V || surfaces.L || surfaces.M || surfaces.D || surfaces.O ||
-                    wholeTooth.absent || wholeTooth.restoRadicular ||
-                    wholeTooth.protesisFija || wholeTooth.prosthesisExisting;
+                    Object.values(wholeTooth).some(Boolean);
 
-                if (!tieneAlgo) continue;
+                if (!tieneAlgo && !dirtyTeeth.has(numeroDiente)) continue;
 
                 const res = await fetch(`${API}/odontograma/actualizarDiente`, {
                     method: "POST",
@@ -338,6 +442,14 @@ const Odontograma = forwardRef(function Odontograma({ patientId, idOdontograma, 
                             resto_radicular: wholeTooth.restoRadicular,
                             protesis_fija: wholeTooth.protesisFija,
                             protesis_existente: wholeTooth.prosthesisExisting,
+                            corona: wholeTooth.corona,
+                            pieza_extraida: wholeTooth.piezaExtraida,
+                            extraccion_indicada: wholeTooth.extraccionIndicada,
+                            extraida_ortodoncia: wholeTooth.extraidaOrtodoncia,
+                            indicada_ortodoncia: wholeTooth.indicadaOrtodoncia,
+                            indicada_sellante: wholeTooth.indicadaSellante,
+                            pieza_faltante: wholeTooth.piezaFaltante,
+                            pieza_sana: wholeTooth.piezaSana,
                             cara_V: surfaces.V || null,
                             cara_L: surfaces.L || null,
                             cara_M: surfaces.M || null,
@@ -355,6 +467,7 @@ const Odontograma = forwardRef(function Odontograma({ patientId, idOdontograma, 
                 }
             }
 
+            setDirtyTeeth(new Set());
             toast.success("Odontograma actualizado correctamente");
         } catch (error) {
             toast.error("Error al actualizar el odontograma");
@@ -370,7 +483,7 @@ const Odontograma = forwardRef(function Odontograma({ patientId, idOdontograma, 
             <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 mr-2">Herramienta:</span>
-                    {TOOLS.map((t) => (
+                    {TOOLS.filter((t) => t.id !== "eraser").map((t) => (
                         <button
                             key={t.id}
                             onClick={() => setActiveTool(t.id)}
@@ -385,7 +498,22 @@ const Odontograma = forwardRef(function Odontograma({ patientId, idOdontograma, 
                         </button>
                     ))}
 
-                    <div className="ml-auto">
+                    <div className="ml-auto flex items-center gap-2">
+                        {/* ── Borrador separado ── */}
+                        <button
+                            onClick={() => setActiveTool("eraser")}
+                            className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all duration-150 border ${
+                                activeTool === "eraser"
+                                    ? "border-red-500 bg-red-500 text-white shadow-md"
+                                    : "border-red-200 bg-white text-red-600 hover:bg-red-50"
+                            }`}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Borrar
+                        </button>
+                        <div className="w-px h-6 bg-slate-300 shrink-0" />
                         <button
                             onClick={handleActualizar}
                             disabled={guardando}
@@ -452,18 +580,39 @@ const Odontograma = forwardRef(function Odontograma({ patientId, idOdontograma, 
             {/* ── Leyenda ── */}
             <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-3">Leyenda</h3>
-                <div className="flex flex-wrap gap-x-6 gap-y-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-2">
+                    {/* ── Estados de superficie ── */}
                     <div className="flex items-center gap-2">
-                        <span className="h-3 w-3 rounded-sm bg-red-500" />
-                        <span className="text-xs text-slate-600">Caries</span>
+                        <span className="h-3 w-3 rounded-sm border border-slate-300 bg-slate-100" />
+                        <span className="text-xs text-slate-600">Sano</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="h-3 w-3 rounded-sm bg-gray-400" />
                         <span className="text-xs text-slate-600">Amalgama</span>
                     </div>
                     <div className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded-sm bg-red-500" />
+                        <span className="text-xs text-slate-600">Caries</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded-sm bg-orange-400" />
+                        <span className="text-xs text-slate-600">Fractura</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded-sm bg-emerald-500" />
+                        <span className="text-xs text-slate-600">Selladas</span>
+                    </div>
+                    <div className="flex items-center gap-2">
                         <span className="h-3 w-3 rounded-sm bg-cyan-400" />
                         <span className="text-xs text-slate-600">Resina</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: "#1e40af" }} />
+                        <span className="text-xs text-slate-600">Vidrio Ionómero</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: "#78350f" }} />
+                        <span className="text-xs text-slate-600">Abfracción</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="h-3 w-3 rounded-sm bg-gray-600" />
@@ -476,6 +625,40 @@ const Odontograma = forwardRef(function Odontograma({ patientId, idOdontograma, 
                     <div className="flex items-center gap-2">
                         <span className="h-3 w-3 rounded-sm bg-orange-500" />
                         <span className="text-xs text-slate-600">Amalgama defectuosa</span>
+                    </div>
+
+                    {/* ── Estados de diente completo ── */}
+                    <div className="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="none" stroke="#3b82f6" strokeWidth="2"/></svg>
+                        <span className="text-xs text-slate-600">Corona</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 14 14"><g stroke="#374151" strokeWidth="2" strokeLinecap="round"><line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/></g></svg>
+                        <span className="text-xs text-slate-600">Pieza Extraída</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 14 14"><g stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round"><line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/></g></svg>
+                        <span className="text-xs text-slate-600">Extracción indicada</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 14 14"><g stroke="#2563eb" strokeWidth="2" strokeLinecap="round"><line x1="7" y1="2" x2="7" y2="12"/><line x1="2" y1="7" x2="12" y2="7"/></g></svg>
+                        <span className="text-xs text-slate-600">Extraída por Ortodoncia</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 14 14"><g stroke="#f43f5e" strokeWidth="2" strokeLinecap="round"><line x1="7" y1="2" x2="7" y2="12"/><line x1="2" y1="7" x2="12" y2="7"/></g></svg>
+                        <span className="text-xs text-slate-600">Indicada por Ortodoncia</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 14 14"><g stroke="#16a34a" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="3" x2="11" y2="11"/><line x1="11" y1="3" x2="3" y2="11"/></g></svg>
+                        <span className="text-xs text-slate-600">Indicada por Sellante</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 14 14"><g stroke="#06b6d4" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="3" x2="11" y2="11"/><line x1="11" y1="3" x2="3" y2="11"/></g></svg>
+                        <span className="text-xs text-slate-600">Pieza faltante</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 14 14"><g stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="2,1.5"><rect x="2" y="2" width="10" height="10" fill="none"/><line x1="7" y1="2" x2="7" y2="12"/><line x1="2" y1="7" x2="12" y2="7"/></g></svg>
+                        <span className="text-xs text-slate-600">Pieza Sana</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="h-3 w-3 rounded-sm bg-gray-900" />

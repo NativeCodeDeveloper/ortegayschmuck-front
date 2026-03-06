@@ -466,20 +466,20 @@ export default function TarifaServicio() {
                                 </TableRow>
                             ) : (
                                 listaTarifasProfesionales.map((tarifa, index) => (
-                                        <TableRow key={tarifa.id_tarifaProfesional || index} className="hover:bg-slate-50 transition-colors">
-                                            <TableCell className="font-medium text-slate-900">{tarifa.nombreProfesional}</TableCell>
-                                            <TableCell className="text-slate-600">{tarifa.nombreServicio}</TableCell>
-                                            <TableCell className="text-slate-600">{tarifa.duracion_min} min</TableCell>
-                                            <TableCell className="text-right font-semibold text-slate-900">${tarifa.precio}</TableCell>
-                                            <TableCell className="text-center">
-                                                <ButtonDinamic
-                                                    onClick={() =>seleccionarTarifaProfesional(tarifa.id_tarifaProfesional)}
-                                                    className="bg-green-600 hover:bg-green-500 text-xs px-3 py-1"
-                                                >
-                                                    Seleccionar
-                                                </ButtonDinamic>
-                                            </TableCell>
-                                        </TableRow>
+                                    <TableRow key={tarifa.id_tarifaProfesional || index} className="hover:bg-slate-50 transition-colors">
+                                        <TableCell className="font-medium text-slate-900">{tarifa.nombreProfesional}</TableCell>
+                                        <TableCell className="text-slate-600">{tarifa.nombreServicio}</TableCell>
+                                        <TableCell className="text-slate-600">{tarifa.duracion_min} min</TableCell>
+                                        <TableCell className="text-right font-semibold text-slate-900">${tarifa.precio}</TableCell>
+                                        <TableCell className="text-center">
+                                            <ButtonDinamic
+                                                onClick={() =>seleccionarTarifaProfesional(tarifa.id_tarifaProfesional)}
+                                                className="bg-green-600 hover:bg-green-500 text-xs px-3 py-1"
+                                            >
+                                                Seleccionar
+                                            </ButtonDinamic>
+                                        </TableCell>
+                                    </TableRow>
                                 ))
                             )}
                         </TableBody>

@@ -16,7 +16,11 @@ const ALL_TEETH = [
 function emptyTooth() {
     return {
         surfaces: { V: null, L: null, M: null, D: null, O: null },
-        wholeTooth: { absent: false, restoRadicular: false, protesisFija: false, prosthesisExisting: false },
+        wholeTooth: {
+            absent: false, restoRadicular: false, protesisFija: false, prosthesisExisting: false,
+            corona: false, piezaExtraida: false, extraccionIndicada: false, extraidaOrtodoncia: false,
+            indicadaOrtodoncia: false, indicadaSellante: false, piezaFaltante: false, piezaSana: false,
+        },
     };
 }
 
@@ -38,6 +42,14 @@ function transformarDatosBackend(filas) {
                 restoRadicular: !!fila.resto_radicular,
                 protesisFija: !!fila.protesis_fija,
                 prosthesisExisting: !!fila.protesis_existente,
+                corona: !!fila.corona,
+                piezaExtraida: !!fila.pieza_extraida,
+                extraccionIndicada: !!fila.extraccion_indicada,
+                extraidaOrtodoncia: !!fila.extraida_ortodoncia,
+                indicadaOrtodoncia: !!fila.indicada_ortodoncia,
+                indicadaSellante: !!fila.indicada_sellante,
+                piezaFaltante: !!fila.pieza_faltante,
+                piezaSana: !!fila.pieza_sana,
             },
         };
     }
