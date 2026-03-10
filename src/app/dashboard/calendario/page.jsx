@@ -1,6 +1,6 @@
 "use client"
 
-import {useState, useMemo, useEffect, useRef} from "react";
+import {useState, useMemo, useEffect, useRef, Suspense} from "react";
 import {useSearchParams} from "next/navigation";
 import {Calendar, dateFnsLocalizer} from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -25,6 +25,14 @@ const localizer = dateFnsLocalizer({format, parse, startOfWeek: dfStartOfWeek, g
 const DnDCalendar = withDragAndDrop(Calendar);
 
 export default function Calendario() {
+    return (
+        <Suspense fallback={<div className="min-h-screen grid place-items-center"><span className="text-sm text-slate-400">Cargando calendario...</span></div>}>
+            <CalendarioContent />
+        </Suspense>
+    );
+}
+
+function CalendarioContent() {
 
     const API = process.env.NEXT_PUBLIC_API_URL;
     const popupRef = useRef(null);
