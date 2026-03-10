@@ -2,6 +2,7 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import Link from "next/link";
 import MobileNav from "./MobileNav";
+import SignOutBtn from "./SignOutBtn";
 
 export const metadata = {
     title: "Dashboard",
@@ -237,6 +238,7 @@ export default function DashboardLayout({ children }) {
                                     </svg>
                                     Volver al sitio
                                 </Link>
+                                <SignOutBtn />
                             </div>
                         </div>
                     </nav>
