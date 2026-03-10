@@ -1,6 +1,7 @@
 "use client"
 
 import {useState, useMemo, useEffect, useRef} from "react";
+import {useSearchParams} from "next/navigation";
 import {Calendar, dateFnsLocalizer} from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
@@ -135,11 +136,27 @@ export default function Calendario() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [currentView, setCurrentView] = useState("week");
 
+    const searchParams = useSearchParams();
+
     const [nombrePaciente, setNombrePaciente] = useState("");
     const [apellidoPaciente, setApellidoPaciente] = useState("");
     const [rut, setRut] = useState("");
     const [telefono, setTelefono] = useState("");
     const [email, setEmail] = useState("");
+
+    // Precargar datos del paciente si vienen por query params
+    useEffect(() => {
+        const nombre = searchParams.get("nombre");
+        if (nombre) setNombrePaciente(nombre);
+        const apellido = searchParams.get("apellido");
+        if (apellido) setApellidoPaciente(apellido);
+        const rutParam = searchParams.get("rut");
+        if (rutParam) setRut(rutParam);
+        const tel = searchParams.get("telefono");
+        if (tel) setTelefono(tel);
+        const correo = searchParams.get("email");
+        if (correo) setEmail(correo);
+    }, []);
     const [fechaInicio, setfechaInicio] = useState("");
     const [fechaFinalizacion, setfechaFinalizacion] = useState("");
     const [horaInicio, setHoraInicio] = useState("");
