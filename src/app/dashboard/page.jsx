@@ -26,11 +26,11 @@ import toast from "react-hot-toast";
 const michroma = Michroma({ weight: "400", subsets: ["latin"], display: "swap" });
 
 const fadeUp = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 12 },
     visible: (i = 0) => ({
         opacity: 1,
         y: 0,
-        transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+        transition: { delay: i * 0.06, duration: 0.38, ease: [0.22, 1, 0.36, 1] },
     }),
 };
 
@@ -210,7 +210,7 @@ export default function DashboardHome() {
                     variants={stagger}
                     initial="hidden"
                     animate="visible"
-                    className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4"
+                    className="mb-5 grid grid-cols-2 gap-2 lg:grid-cols-4"
                 >
                     {kpis.map((kpi, i) => {
                         const Icon = kpi.icon;
@@ -225,42 +225,42 @@ export default function DashboardHome() {
                                 key={kpi.label}
                                 variants={fadeUp}
                                 custom={i + 1}
-                                className="group relative cursor-default overflow-hidden rounded-xl border border-slate-200 bg-white p-3.5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_60px_rgba(15,23,42,0.12)]"
+                                className="group relative cursor-default overflow-hidden rounded-lg border border-slate-200 bg-white p-2.5 shadow-[0_16px_40px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_60px_rgba(15,23,42,0.12)]"
                             >
-                                <div className={cn("pointer-events-none absolute -top-10 -right-10 h-28 w-28 rounded-full opacity-[0.12] blur-3xl transition-opacity group-hover:opacity-[0.2]", g.blob1)} />
-                                <div className={cn("pointer-events-none absolute -bottom-6 -left-6 h-20 w-20 rounded-full opacity-[0.08] blur-3xl", g.blob2)} />
+                                <div className={cn("pointer-events-none absolute -top-8 -right-8 h-20 w-20 rounded-full opacity-[0.1] blur-3xl transition-opacity group-hover:opacity-[0.16]", g.blob1)} />
+                                <div className={cn("pointer-events-none absolute -bottom-5 -left-5 h-16 w-16 rounded-full opacity-[0.06] blur-3xl", g.blob2)} />
 
                                 <div className="relative">
-                                    <div className="mb-2.5 flex items-center justify-between">
-                                        <div className={cn("flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg ring-2", kpi.color, g.iconShadow, g.iconRing)}>
-                                            <Icon className="h-4.5 w-4.5 text-white" strokeWidth={1.8} />
+                                    <div className="mb-1.5 flex items-center justify-between">
+                                        <div className={cn("flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br shadow-lg ring-2", kpi.color, g.iconShadow, g.iconRing)}>
+                                            <Icon className="h-3.5 w-3.5 text-white" strokeWidth={1.8} />
                                         </div>
                                         <div className="flex items-center gap-1.5">
-                                            <span className="relative flex h-1.5 w-1.5">
-                                                <span className={cn("absolute inline-flex h-full w-full animate-ping rounded-full opacity-75", g.dotGlow)} />
-                                                <span className={cn("relative inline-flex h-1.5 w-1.5 rounded-full", g.dotBg)} />
+                                            <span className="relative flex h-1 w-1">
+                                                <span className={cn("absolute inline-flex h-full w-full rounded-full opacity-60", g.dotGlow)} />
+                                                <span className={cn("relative inline-flex h-1 w-1 rounded-full", g.dotBg)} />
                                             </span>
-                                            <span className={cn("text-[11px] font-semibold tabular-nums", g.pctText)}>{kpi.pct}%</span>
+                                            <span className={cn("text-[9px] font-semibold tabular-nums", g.pctText)}>{kpi.pct}%</span>
                                         </div>
                                     </div>
 
-                                    <div className="text-2xl font-extrabold tracking-tight text-slate-900">
+                                    <div className="text-lg font-extrabold tracking-tight text-slate-900">
                                         {kpi.value}
                                     </div>
 
-                                    <span className="mt-1 block text-[11px] font-bold uppercase tracking-widest text-slate-500">
+                                    <span className="mt-0.5 block text-[9px] font-bold uppercase tracking-[0.16em] text-slate-500">
                                         {kpi.label}
                                     </span>
 
-                                    <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-slate-100">
+                                    <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-slate-100">
                                         <div
-                                            className={cn("h-full rounded-full bg-gradient-to-r shadow-sm transition-all duration-700 ease-out", g.bar, g.barShadow)}
+                                            className={cn("h-full rounded-full bg-gradient-to-r shadow-sm", g.bar, g.barShadow)}
                                             style={{ width: `${Math.max(kpi.pct, 3)}%` }}
                                         />
                                     </div>
-                                    <div className="mt-1.5 flex items-center justify-between">
-                                        <span className="text-[10px] font-medium text-slate-400">del total de hoy</span>
-                                        <span className="text-[11px] font-semibold tabular-nums text-slate-600">{kpi.value}/{totalCitas}</span>
+                                    <div className="mt-1 flex items-center justify-between">
+                                        <span className="text-[8px] font-medium text-slate-400">del total de hoy</span>
+                                        <span className="text-[9px] font-semibold tabular-nums text-slate-600">{kpi.value}/{totalCitas}</span>
                                     </div>
                                 </div>
                             </motion.div>
