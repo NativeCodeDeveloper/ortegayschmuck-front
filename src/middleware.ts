@@ -12,6 +12,8 @@ const isRecepcionistaAllowed = createRouteMatcher([
   '/dashboard/agendaCitas',
   '/dashboard/bloqueosAgenda',
   '/dashboard/AgendaDetalle/(.*)',
+  '/dashboard/GestionPaciente',
+  '/dashboard/paciente/(.*)',
 ])
 
 export default clerkMiddleware(async (auth, req) => {
