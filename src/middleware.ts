@@ -2,7 +2,17 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
 const isDashboard = createRouteMatcher(['/dashboard(.*)'])
-const isNoAccess = createRouteMatcher(['/dashboard/no-access'])
+
+// Rutas permitidas para recepcionista: inicio + módulo calendario completo
+const isRecepcionistaAllowed = createRouteMatcher([
+  '/dashboard',
+  '/dashboard/no-access',
+  '/dashboard/calendarioGeneral',
+  '/dashboard/calendario',
+  '/dashboard/agendaCitas',
+  '/dashboard/bloqueosAgenda',
+  '/dashboard/AgendaDetalle/(.*)',
+])
 
 export default clerkMiddleware(async (auth, req) => {
   if (!isDashboard(req)) return NextResponse.next()
@@ -14,14 +24,11 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(new URL('/sign-in', req.url))
   }
 
-  // Ya está en no-access → dejar pasar
-  if (isNoAccess(req)) return NextResponse.next()
-
   // Leer rol desde publicMetadata (configurado en Clerk Dashboard)
   const role = (sessionClaims?.metadata as { role?: string } | undefined)?.role
 
-  // Recepcionista → redirigir a no-access
-  if (role === 'recepcionista') {
+  // Recepcionista → solo accede a inicio + calendario, el resto → no-access
+  if (role === 'recepcionista' && !isRecepcionistaAllowed(req)) {
     return NextResponse.redirect(new URL('/dashboard/no-access', req.url))
   }
 
