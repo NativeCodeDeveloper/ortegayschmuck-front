@@ -137,7 +137,7 @@ export default function Page() {
               </h1>
 
               <p className="mt-5 max-w-lg text-[14px] leading-6 text-slate-600">
-                Plataforma integral para agenda, fichas clinicas y administracion del centro medico con una experiencia clara, moderna y profesional.
+                Acceso al sistema
               </p>
 
               <div className="mt-6 flex flex-wrap gap-2">

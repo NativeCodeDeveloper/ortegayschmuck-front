@@ -534,61 +534,38 @@ function CalendarioContent() {
 
     // Expande bloqueos multi-día en segmentos por día para que
     // react-big-calendar los muestre en la grilla horaria (no en all-day).
+    // Cada día del rango usa el MISMO horario (horaInicio → horaFinalizacion).
     function expandirBloqueosPorDia(bloqueos) {
         const resultado = [];
         for (const bloqueo of bloqueos) {
-            const start = convertirAFechaCalendario(
-                (bloqueo.fechaInicio ?? "").slice(0, 10),
-                bloqueo.horaInicio ?? "00:00:00"
-            );
-            const end = convertirAFechaCalendario(
-                (bloqueo.fechaFinalizacion ?? "").slice(0, 10),
-                bloqueo.horaFinalizacion ?? "23:59:00"
-            );
+            const horaIni = bloqueo.horaInicio ?? "00:00:00";
+            const horaFin = bloqueo.horaFinalizacion ?? "23:59:00";
+            const fechaIniStr = (bloqueo.fechaInicio ?? "").slice(0, 10);
+            const fechaFinStr = (bloqueo.fechaFinalizacion ?? "").slice(0, 10);
 
-            if (isNaN(start.getTime()) || isNaN(end.getTime())) continue;
+            const primerDia = new Date(fechaIniStr + "T00:00:00");
+            const ultimoDia = new Date(fechaFinStr + "T00:00:00");
 
-            const mismoDia = start.getFullYear() === end.getFullYear()
-                && start.getMonth() === end.getMonth()
-                && start.getDate() === end.getDate();
+            if (isNaN(primerDia.getTime()) || isNaN(ultimoDia.getTime())) continue;
 
-            if (mismoDia) {
+            let cursor = new Date(primerDia);
+            while (cursor <= ultimoDia) {
+                const y = cursor.getFullYear();
+                const m = String(cursor.getMonth() + 1).padStart(2, "0");
+                const d = String(cursor.getDate()).padStart(2, "0");
+                const fechaDia = `${y}-${m}-${d}`;
+
                 resultado.push({
                     id_bloqueo: bloqueo.id_bloqueo,
                     title: "BLOQUEADO" + (bloqueo.motivo ? " - " + bloqueo.motivo : ""),
-                    start,
-                    end,
+                    start: new Date(`${fechaDia}T${horaIni}`),
+                    end: new Date(`${fechaDia}T${horaFin}`),
                     allDay: false,
                     tipo: "bloqueo",
                     resource: bloqueo,
                 });
-            } else {
-                // Día 1: desde hora inicio hasta 23:59
-                let cursor = new Date(start);
-                while (cursor < end) {
-                    const esPrimerDia = cursor.toDateString() === start.toDateString();
-                    const esUltimoDia = cursor.toDateString() === end.toDateString();
 
-                    const diaStart = esPrimerDia
-                        ? new Date(cursor)
-                        : new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate(), 0, 0, 0);
-                    const diaEnd = esUltimoDia
-                        ? new Date(end)
-                        : new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate(), 23, 59, 0);
-
-                    resultado.push({
-                        id_bloqueo: bloqueo.id_bloqueo,
-                        title: "BLOQUEADO" + (bloqueo.motivo ? " - " + bloqueo.motivo : ""),
-                        start: diaStart,
-                        end: diaEnd,
-                        allDay: false,
-                        tipo: "bloqueo",
-                        resource: bloqueo,
-                    });
-
-                    // Avanzar al día siguiente
-                    cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() + 1, 0, 0, 0);
-                }
+                cursor = new Date(y, cursor.getMonth(), cursor.getDate() + 1, 0, 0, 0);
             }
         }
         return resultado;
