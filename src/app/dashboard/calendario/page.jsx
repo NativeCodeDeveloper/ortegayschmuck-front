@@ -255,12 +255,28 @@ function CalendarioContent() {
                 if (start < evEnd && end > evStart) return true;
             }
         }
-        // Verificar contra bloqueos existentes
+        // Verificar contra bloqueos existentes (expandidos por día)
         if (dataBloqueos && dataBloqueos.length > 0) {
             for (const bloqueo of dataBloqueos) {
-                const bStart = convertirAFechaCalendario((bloqueo.fechaInicio ?? "").slice(0, 10), (bloqueo.horaInicio ?? "00:00:00"));
-                const bEnd = convertirAFechaCalendario((bloqueo.fechaFinalizacion ?? "").slice(0, 10), (bloqueo.horaFinalizacion ?? "00:00:00"));
-                if (start < bEnd && end > bStart) return true;
+                const horaIni = bloqueo.horaInicio ?? "00:00:00";
+                const horaFin = bloqueo.horaFinalizacion ?? "23:59:00";
+                const fechaIniStr = (bloqueo.fechaInicio ?? "").slice(0, 10);
+                const fechaFinStr = (bloqueo.fechaFinalizacion ?? "").slice(0, 10);
+                const primerDia = new Date(fechaIniStr + "T00:00:00");
+                const ultimoDia = new Date(fechaFinStr + "T00:00:00");
+                if (isNaN(primerDia.getTime()) || isNaN(ultimoDia.getTime())) continue;
+
+                let cursor = new Date(primerDia);
+                while (cursor <= ultimoDia) {
+                    const y = cursor.getFullYear();
+                    const m = String(cursor.getMonth() + 1).padStart(2, "0");
+                    const d = String(cursor.getDate()).padStart(2, "0");
+                    const fechaDia = `${y}-${m}-${d}`;
+                    const bStart = new Date(`${fechaDia}T${horaIni}`);
+                    const bEnd = new Date(`${fechaDia}T${horaFin}`);
+                    if (start < bEnd && end > bStart) return true;
+                    cursor = new Date(y, cursor.getMonth(), cursor.getDate() + 1, 0, 0, 0);
+                }
             }
         }
         return false;
