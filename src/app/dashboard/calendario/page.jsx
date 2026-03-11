@@ -246,12 +246,22 @@ function CalendarioContent() {
     }
 
     function isOverlapping(start, end, ignoredReservaId = null) {
-        if (!dataAgenda || dataAgenda.length === 0) return false;
-        for (const cita of dataAgenda) {
-            if (ignoredReservaId && cita.id_reserva === ignoredReservaId) continue;
-            const evStart = convertirAFechaCalendario((cita.fechaInicio ?? "").slice(0, 10), (cita.horaInicio ?? "00:00:00"));
-            const evEnd = convertirAFechaCalendario((cita.fechaFinalizacion ?? "").slice(0, 10), (cita.horaFinalizacion ?? "00:00:00"));
-            if (start < evEnd && end > evStart) return true;
+        // Verificar contra reservas existentes
+        if (dataAgenda && dataAgenda.length > 0) {
+            for (const cita of dataAgenda) {
+                if (ignoredReservaId && cita.id_reserva === ignoredReservaId) continue;
+                const evStart = convertirAFechaCalendario((cita.fechaInicio ?? "").slice(0, 10), (cita.horaInicio ?? "00:00:00"));
+                const evEnd = convertirAFechaCalendario((cita.fechaFinalizacion ?? "").slice(0, 10), (cita.horaFinalizacion ?? "00:00:00"));
+                if (start < evEnd && end > evStart) return true;
+            }
+        }
+        // Verificar contra bloqueos existentes
+        if (dataBloqueos && dataBloqueos.length > 0) {
+            for (const bloqueo of dataBloqueos) {
+                const bStart = convertirAFechaCalendario((bloqueo.fechaInicio ?? "").slice(0, 10), (bloqueo.horaInicio ?? "00:00:00"));
+                const bEnd = convertirAFechaCalendario((bloqueo.fechaFinalizacion ?? "").slice(0, 10), (bloqueo.horaFinalizacion ?? "00:00:00"));
+                if (start < bEnd && end > bStart) return true;
+            }
         }
         return false;
     }
@@ -338,7 +348,7 @@ function CalendarioContent() {
         if (isOverlapping(start, end, ignoredReservaId)) {
             if (!selectionGuardRef.current.overlap) {
                 selectionGuardRef.current.overlap = true;
-                toast.error("Horario no disponible. El rango se superpone con otra reserva.");
+                toast.error("Horario no disponible. El rango se superpone con otra reserva o bloqueo.");
                 setTimeout(() => {
                     selectionGuardRef.current.overlap = false;
                 }, 1200);
@@ -522,23 +532,79 @@ function CalendarioContent() {
         next: "Siguiente", previous: "Anterior", today: "Hoy", month: "Mes", week: "Semana", day: "Día", agenda: "Agenda", noEventsInRange: "No hay eventos",
     }), []);
 
+    // Expande bloqueos multi-día en segmentos por día para que
+    // react-big-calendar los muestre en la grilla horaria (no en all-day).
+    function expandirBloqueosPorDia(bloqueos) {
+        const resultado = [];
+        for (const bloqueo of bloqueos) {
+            const start = convertirAFechaCalendario(
+                (bloqueo.fechaInicio ?? "").slice(0, 10),
+                bloqueo.horaInicio ?? "00:00:00"
+            );
+            const end = convertirAFechaCalendario(
+                (bloqueo.fechaFinalizacion ?? "").slice(0, 10),
+                bloqueo.horaFinalizacion ?? "23:59:00"
+            );
+
+            if (isNaN(start.getTime()) || isNaN(end.getTime())) continue;
+
+            const mismoDia = start.getFullYear() === end.getFullYear()
+                && start.getMonth() === end.getMonth()
+                && start.getDate() === end.getDate();
+
+            if (mismoDia) {
+                resultado.push({
+                    id_bloqueo: bloqueo.id_bloqueo,
+                    title: "BLOQUEADO" + (bloqueo.motivo ? " - " + bloqueo.motivo : ""),
+                    start,
+                    end,
+                    allDay: false,
+                    tipo: "bloqueo",
+                    resource: bloqueo,
+                });
+            } else {
+                // Día 1: desde hora inicio hasta 23:59
+                let cursor = new Date(start);
+                while (cursor < end) {
+                    const esPrimerDia = cursor.toDateString() === start.toDateString();
+                    const esUltimoDia = cursor.toDateString() === end.toDateString();
+
+                    const diaStart = esPrimerDia
+                        ? new Date(cursor)
+                        : new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate(), 0, 0, 0);
+                    const diaEnd = esUltimoDia
+                        ? new Date(end)
+                        : new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate(), 23, 59, 0);
+
+                    resultado.push({
+                        id_bloqueo: bloqueo.id_bloqueo,
+                        title: "BLOQUEADO" + (bloqueo.motivo ? " - " + bloqueo.motivo : ""),
+                        start: diaStart,
+                        end: diaEnd,
+                        allDay: false,
+                        tipo: "bloqueo",
+                        resource: bloqueo,
+                    });
+
+                    // Avanzar al día siguiente
+                    cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() + 1, 0, 0, 0);
+                }
+            }
+        }
+        return resultado;
+    }
+
     useEffect(() => {
         const eventosReservas = (dataAgenda || []).map((cita) => ({
             id_reserva: cita.id_reserva,
             title: cita.nombrePaciente + " " + cita.apellidoPaciente,
             start: convertirAFechaCalendario(cita.fechaInicio, cita.horaInicio),
             end: convertirAFechaCalendario(cita.fechaFinalizacion, cita.horaFinalizacion),
+            allDay: false,
             tipo: "reserva",
             resource: cita,
         }));
-        const eventosBloqueos = (dataBloqueos || []).map((bloqueo) => ({
-            id_bloqueo: bloqueo.id_bloqueo,
-            title: "BLOQUEADO" + (bloqueo.motivo ? " - " + bloqueo.motivo : ""),
-            start: convertirAFechaCalendario(bloqueo.fechaInicio, bloqueo.horaInicio),
-            end: convertirAFechaCalendario(bloqueo.fechaFinalizacion, bloqueo.horaFinalizacion),
-            tipo: "bloqueo",
-            resource: bloqueo,
-        }));
+        const eventosBloqueos = expandirBloqueosPorDia(dataBloqueos || []);
         setEvents([...eventosReservas, ...eventosBloqueos]);
     }, [dataAgenda, dataBloqueos]);
 
