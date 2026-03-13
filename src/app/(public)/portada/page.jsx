@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import toast from "react-hot-toast";
 
-const defaultHeroSlides = [
+
+/*
   {
     id: "hero-1",
     image: "/fondo2.png",
@@ -14,25 +15,55 @@ const defaultHeroSlides = [
     title: "Diseño clínico de alta precisión.",
     text: "Protocolos personalizados para resultados naturales en odontología integral.",
   },
-  {
-    id: "hero-2",
-    image: "/fondo3.png",
-    alt: "Paciente en evaluacion estetica",
-    badge: "Tecnologia avanzada",
-    title: "Resultados funcionales y estéticos.",
-    text: "Análisis integral, plan por etapas y acompañamiento continuo en cada tratamiento.",
-  },
-  {
-    id: "hero-3",
-    image: "/fondo1.png",
-    alt: "Equipo clinico especializado",
-    badge: "Atencion personalizada",
-    title: "Tu salud oral en un solo lugar.",
-    text: "Integramos criterio clínico y estética dental para una experiencia moderna y segura.",
-  },
-];
+* */
 
-export default function Portada({ slides = defaultHeroSlides }) {
+
+
+
+export default function Portada() {
+
+    const [dataPortada, setDataPortada] = useState([]);
+    const API = process.env.NEXT_PUBLIC_API_URL;
+
+    async function cargarPortada() {
+        try {
+            const res = await fetch(`${API}/carruselPortada/seleccionarCarruselPortada`, {
+                method: "GET",
+                headers: {Accept: "application/json"},
+                mode: "cors"
+            });
+
+            const data = await res.json();
+
+            if(Array.isArray(data) && data.length > 0) {
+                setDataPortada(data);
+            }else{
+                setDataPortada([]);
+            }
+
+        }catch(err) {
+            return toast.error("No se ha podido cargar portada, contacte al administrador del sistema.")
+        }
+    }
+
+    useEffect(() => {
+        cargarPortada()
+    },[])
+
+    let defaultHeroSlides = dataPortada.map((portada) => {
+        return{
+            id: portada.tituloPortadaCarrusel,
+            image: `https://imagedelivery.net/aCBUhLfqUcxA2yhIBn1fNQ/${portada.imagenPortada}/portada`,
+            alt: portada.tituloPortadaCarrusel,
+            badge: "Clinica Ortega & Schmuck",
+            title: portada.tituloPortadaCarrusel,
+            text: portada.descripcionPublicacionesPortada,
+        }
+    })
+
+    let slides = defaultHeroSlides;
+
+
   const safeSlides = useMemo(
     () => (slides.length > 0 ? slides : defaultHeroSlides),
     [slides]
@@ -104,14 +135,13 @@ export default function Portada({ slides = defaultHeroSlides }) {
                     isActive ? "opacity-100" : "pointer-events-none opacity-0",
                   ].join(" ")}
                 >
-                  <Image
-                    src={slide.image}
-                    alt={slide.alt}
-                    fill
-                    priority={index === 0}
-                    sizes="(max-width: 768px) 100vw, 1200px"
-                    className="object-cover object-center"
-                  />
+                    <img
+                        src={slide.image}
+                        alt={slide.alt}
+                        className="absolute inset-0 h-full w-full object-cover object-center"
+                    />
+
+
                   <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(5,5,6,0.92)_0%,rgba(8,8,8,0.55)_45%,rgba(12,12,12,0.42)_100%)]" />
 
                   <div className="absolute inset-x-0 bottom-0 top-0 flex items-end px-6 pb-10 pt-20 sm:px-10 sm:pb-12 md:px-14">

@@ -1,36 +1,52 @@
+'use client'
+
 import Image from "next/image";
 import Link from "next/link";
 import RevealOnScroll from "@/Componentes/RevealOnScroll";
+import toast from "react-hot-toast";
+import {useEffect, useState} from "react";
 
-const services = [
-  {
-    name: "Diseño de sonrisa",
-    image: "/1.JPG",
-  },
-  {
-    name: "Implantología dental",
-    image: "/2.png",
-  },
-  {
-    name: "Rehabilitación oral",
-    image: "/3.png",
-  },
-  {
-    name: "Limpieza dental profunda",
-    image: "/4.png",
-  },
-  {
-    name: "Blanqueamiento dental",
-    image: "/5.png",
-  },
-  {
-    name: "Carillas dentales",
-    image: "/6.png",
-  },
-];
 
 export default function Seccion2() {
-  return (
+
+    const API = process.env.NEXT_PUBLIC_API_URL;
+    const [infoData, setInfoData] = useState([]);
+    const services = infoData.map((item) => {
+        return{
+            id: item.id_publicacionesTituloDescripcion,
+            name: item.publicacionesTitulo,
+            description: item.publicacionesDescripcion,
+            image:`https://imagedelivery.net/aCBUhLfqUcxA2yhIBn1fNQ/${item.publicacionesTituloDescripcionImagen}/card` ,
+        }
+    })
+
+async function loadServices() {
+        try {
+            const res = await  fetch(`${API}/publicacionesTituloDetalle/seleccionarPublicacionesTituloDetalle`, {
+                method: "GET",
+                headers: {Accept: "application/json"},
+                mode: "cors"
+            });
+
+            if(!res.ok) {
+                return toast.error(`No ha sido posible cargar las imagenes del sistema contacte a soporte de NativeCode`)
+            }else {
+
+                const data = await res.json();
+                setInfoData(data);
+            }
+        }catch{
+            return toast.error(`No ha sido posible cargar las imagenes del sistema contacte a soporte de NativeCode`)
+        }
+}
+
+useEffect(() => {
+    loadServices();
+})
+
+
+
+    return (
     <section id="servicios" className="scroll-mt-24 bg-[#080808] py-20 text-white sm:py-24">
       <div className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-10">
         <RevealOnScroll>
@@ -53,12 +69,11 @@ export default function Seccion2() {
                 className="group block h-full overflow-hidden rounded-3xl border border-white/10 bg-[#121212] transition duration-300 ease-out hover:-translate-y-1 hover:border-white/25"
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
-                  <Image
-                    src={service.image}
-                    alt={service.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover transition duration-500 ease-out group-hover:scale-105"
+                  <img
+
+                      src={service.image}
+                      alt={service.name}
+                      className="w-full h-full object-cover transition duration-500 ease-out group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.1)_0%,rgba(0,0,0,0.65)_100%)]" />
                 </div>

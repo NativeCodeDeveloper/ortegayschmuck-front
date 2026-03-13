@@ -1,40 +1,56 @@
 "use client";
 
-import { useRef, useState } from "react";
-import Image from "next/image";
+import {useEffect, useRef, useState} from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import RevealOnScroll from "@/Componentes/RevealOnScroll";
 
-const clinicalCases = [
-  {
-    title: "Rehabilitación de sonrisa",
-    description: "Recuperación funcional y estética dental con un protocolo clínico conservador.",
-    image: "/7.png",
-  },
-  {
-    title: "Alineación dental",
-    description: "Planificación ortodóncica para mejorar mordida, función y armonía de la sonrisa.",
-    image: "/8.png",
-  },
-  {
-    title: "Blanqueamiento clínico",
-    description: "Tratamiento progresivo para recuperar luminosidad dental preservando la estructura.",
-    image: "/12.png",
-  },
-  {
-    title: "Carillas dentales",
-    description: "Enfoque restaurador para mejorar forma, color y proporción con resultados naturales.",
-    image: "/10.png",
-  },
-];
+
 
 const FALLBACK_CASE_IMAGE = "/ac3.png";
 
 export default function Seccion3() {
+
   const scrollerRef = useRef(null);
   const [imageErrors, setImageErrors] = useState({});
+  const [listaPublicaciones, setListaPublicaciones] = useState([]);
+  const API = process.env.NEXT_PUBLIC_API_URL;
 
+
+    async function listarPublicacionesSeccion3() {
+        try {
+            const res = await fetch(`${API}/publicaciones/seleccionarPublicaciones`, {
+                method: "GET",
+                headers: {Accept: "application/json"},
+                mode: "cors",
+            })
+
+            if(!res.ok) {
+                console.error("No se han podido Listar Publicaciones / Falla en el fetch desde el frontEnd");
+                setListaPublicaciones([])
+                return[]
+            }else {
+                const publicaciones = await res.json();
+                setListaPublicaciones(publicaciones);
+                return publicaciones;
+            }
+        }catch(err) {
+            console.error("Problema al consultar Backend desde la vista fronend:"+err);
+        }
+    }
+
+
+    useEffect(() => {
+        listarPublicacionesSeccion3();
+    }, []);
+
+
+    const clinicalCases = listaPublicaciones.map((publicaciones) => {
+        return         {
+            title: publicaciones.descripcionPublicaciones,
+            image: `https://imagedelivery.net/aCBUhLfqUcxA2yhIBn1fNQ/${publicaciones.imagenPublicaciones_primera}/card`,
+        }
+    })
   const scrollByAmount = (direction) => {
     const container = scrollerRef.current;
     if (!container) return;
@@ -98,13 +114,11 @@ export default function Seccion3() {
               >
                 <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#111]">
                   <div className="relative aspect-[4/5] overflow-hidden">
-                    <Image
+                    <img
                       src={imageErrors[item.image] ? FALLBACK_CASE_IMAGE : item.image}
                       alt={item.title}
-                      fill
                       loading="lazy"
-                      sizes="(max-width: 640px) 82vw, (max-width: 1024px) 48vw, 31vw"
-                      className="object-cover"
+                      className="h-full w-full object-cover object-center"
                       onError={() =>
                         setImageErrors((current) => ({
                           ...current,
@@ -114,13 +128,10 @@ export default function Seccion3() {
                     />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,0,0,0.74)_100%)]" />
                   </div>
-                  <div className="flex min-h-[176px] flex-col p-5 sm:p-6">
-                    <h3 className="h-[3.5rem] overflow-hidden text-xl font-light leading-7 tracking-[0.02em] text-white">
+                  <div className="flex  justify-center p-5 sm:p-6">
+                    <h3 className="text-2xl font-light leading-7 tracking-[0.02em] text-white">
                       {item.title}
                     </h3>
-                    <p className="mt-3 h-[5.25rem] overflow-hidden text-sm leading-7 tracking-[0.02em] text-white/72">
-                      {item.description}
-                    </p>
                   </div>
                 </article>
               </RevealOnScroll>
